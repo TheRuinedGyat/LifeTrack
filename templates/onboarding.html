@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile Setup - Fitness Tracker</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group.full-width {
+            grid-column: span 2;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #555;
+        }
+        input, select {
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .macro-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .macro-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .macro-display {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .macro-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+        }
+        .macro-card h4 {
+            margin: 0 0 10px 0;
+            color: #667eea;
+        }
+        .macro-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+        }
+        .macro-unit {
+            font-size: 14px;
+            color: #666;
+        }
+        .calc-info {
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #2196f3;
+        }
+        .calc-info h4 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+        .calc-info p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .macro-breakdown {
+            background: #fff3cd;
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+            font-size: 14px;
+            border-left: 4px solid #ffc107;
+        }
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.3s;
+            width: 100%;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        .recalc-btn {
+            background: #28a745;
+            padding: 10px 20px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-group.full-width {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏋️ Profile Setup</h1>
+        
+        <form method="POST" id="onboardingForm">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="height">Height (cm)</label>
+                    <input type="number" id="height" name="height" value="175" min="100" max="250" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="weight">Weight (kg)</label>
+                    <input type="number" id="weight" name="weight" value="70" min="30" max="200" step="0.1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <input type="number" id="age" name="age" value="25" min="15" max="100" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="gender">Gender</label>
+                    <select id="gender" name="gender" required>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+                
+                <div class="form-group full-width">
+                    <label for="activity_level">Activity Level</label>
+                    <select id="activity_level" name="activity_level" required>
+                        <option value="1.2">Sedentary (little/no exercise)</option>
+                        <option value="1.375">Light activity (light exercise 1-3 days/week)</option>
+                        <option value="1.5" selected>Moderate activity (moderate exercise 3-5 days/week)</option>
+                        <option value="1.725">Very active (hard exercise 6-7 days/week)</option>
+                        <option value="1.9">Extremely active (very hard exercise, physical job)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="goal">Goal</label>
+                    <select id="goal" name="goal" required>
+                        <option value="lose">Lose Weight</option>
+                        <option value="maintain" selected>Maintain Weight</option>
+                        <option value="gain">Gain Weight</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="calorie_goal">Daily Calorie Goal</label>
+                    <input type="number" id="calorie_goal" name="calorie_goal" value="2000" min="1000" max="5000">
+                </div>
+            </div>
+            
+            <button type="button" class="btn recalc-btn" onclick="recalculateMacros()">
+                🔄 Recalculate Recommendations
+            </button>
+            
+            <div class="macro-section">
+                <h3>📊 Recommended Daily Macros</h3>
+                
+                <div class="calc-info">
+                    <h4>Calculation Details</h4>
+                    <p><strong>BMR:</strong> <span id="bmr-display">1700</span> calories/day</p>
+                    <p><strong>TDEE:</strong> <span id="tdee-display">2550</span> calories/day</p>
+                    <p><strong>Target Calories:</strong> <span id="target-display">2550</span> calories/day</p>
+                </div>
+                
+                <div class="macro-breakdown">
+                    <strong>Macro Split:</strong> 
+                    <span id="macro-split">Protein: 30%, Carbs: 40%, Fat: 30%</span>
+                </div>
+                
+                <div class="macro-display">
+                    <div class="macro-card">
+                        <h4>🥩 Protein</h4>
+                        <div class="macro-value" id="protein-display">126</div>
+                        <div class="macro-unit">grams</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 5px;">
+                            <span id="protein-cals">0</span> calories
+                        </div>
+                    </div>
+                    <div class="macro-card">
+                        <h4>🍞 Carbs</h4>
+                        <div class="macro-value" id="carbs-display">319</div>
+                        <div class="macro-unit">grams</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 5px;">
+                            <span id="carb-cals">0</span> calories
+                        </div>
+                    </div>
+                    <div class="macro-card">
+                        <h4>🥑 Fat</h4>
+                        <div class="macro-value" id="fat-display">63</div>
+                        <div class="macro-unit">grams</div>
+                        <div style="font-size: 12px; color: #999; margin-top: 5px;">
+                            <span id="fat-cals">0</span> calories
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="protein_goal">Protein Goal (g)</label>
+                        <input type="number" id="protein_goal" name="protein_goal" value="126" min="0" max="500">
+                    </div>
+                    <div class="form-group">
+                        <label for="carb_goal">Carb Goal (g)</label>
+                        <input type="number" id="carb_goal" name="carb_goal" value="319" min="0" max="1000">
+                    </div>
+                    <div class="form-group">
+                        <label for="fat_goal">Fat Goal (g)</label>
+                        <input type="number" id="fat_goal" name="fat_goal" value="63" min="0" max="300">
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">🚀 Complete Setup</button>
+        </form>
+    </div>
+
+    <script>
+        function calculateMacros() {
+            const weight = parseFloat(document.getElementById('weight').value) || 70;
+            const height = parseFloat(document.getElementById('height').value) || 175;
+            const age = parseInt(document.getElementById('age').value) || 25;
+            const gender = document.getElementById('gender').value;
+            const goal = document.getElementById('goal').value;
+            const activityLevel = parseFloat(document.getElementById('activity_level').value) || 1.5;
+            
+            // Calculate BMR using Mifflin-St Jeor Equation
+            const s = gender === 'male' ? 5 : -161;
+            const bmr = 10 * weight + 6.25 * height - 5 * age + s;
+            
+            // Calculate TDEE
+            const tdee = bmr * activityLevel;
+            
+            let targetCalories, proteinPercent, carbPercent, fatPercent, macroSplit;
+            
+            // Apply goal-based macro ratios
+            if (goal === 'lose') {
+                targetCalories = tdee * 0.85; // 15% deficit
+                proteinPercent = 0.40;
+                carbPercent = 0.30;
+                fatPercent = 0.30;
+                macroSplit = "Protein: 40%, Carbs: 30%, Fat: 30%";
+            } else if (goal === 'gain') {
+                targetCalories = tdee * 1.10; // 10% surplus
+                proteinPercent = 0.30;
+                carbPercent = 0.50;
+                fatPercent = 0.20;
+                macroSplit = "Protein: 30%, Carbs: 50%, Fat: 20%";
+            } else { // maintain
+                targetCalories = tdee;
+                proteinPercent = 0.30;
+                carbPercent = 0.40;
+                fatPercent = 0.30;
+                macroSplit = "Protein: 30%, Carbs: 40%, Fat: 30%";
+            }
+            
+            // Calculate macros in grams
+            // 1g protein = 4 calories
+            // 1g carbs = 4 calories
+            // 1g fat = 9 calories
+            const proteinGrams = Math.round((targetCalories * proteinPercent) / 4);
+            const carbGrams = Math.round((targetCalories * carbPercent) / 4);
+            const fatGrams = Math.round((targetCalories * fatPercent) / 9);
+            
+            // Calculate actual calories from macros for display
+            const proteinCals = Math.round(proteinGrams * 4);
+            const carbCals = Math.round(carbGrams * 4);
+            const fatCals = Math.round(fatGrams * 9);
+            
+            return {
+                bmr: Math.round(bmr),
+                tdee: Math.round(tdee),
+                targetCalories: Math.round(targetCalories),
+                protein: proteinGrams,
+                carbs: carbGrams,
+                fat: fatGrams,
+                proteinCals: proteinCals,
+                carbCals: carbCals,
+                fatCals: fatCals,
+                macroSplit: macroSplit
+            };
+        }
+        
+        function updateDisplay() {
+            const macros = calculateMacros();
+            
+            // Update display values
+            document.getElementById('bmr-display').textContent = macros.bmr;
+            document.getElementById('tdee-display').textContent = macros.tdee;
+            document.getElementById('target-display').textContent = macros.targetCalories;
+            document.getElementById('macro-split').textContent = macros.macroSplit;
+            
+            document.getElementById('protein-display').textContent = macros.protein;
+            document.getElementById('carbs-display').textContent = macros.carbs;
+            document.getElementById('fat-display').textContent = macros.fat;
+            
+            // Update calorie breakdowns
+            document.getElementById('protein-cals').textContent = macros.proteinCals;
+            document.getElementById('carb-cals').textContent = macros.carbCals;
+            document.getElementById('fat-cals').textContent = macros.fatCals;
+            
+            // Update calorie goal input
+            document.getElementById('calorie_goal').value = macros.targetCalories;
+            
+            // Update macro goal inputs
+            document.getElementById('protein_goal').value = macros.protein;
+            document.getElementById('carb_goal').value = macros.carbs;
+            document.getElementById('fat_goal').value = macros.fat;
+        }
+        
+        function recalculateMacros() {
+            updateDisplay();
+        }
+        
+        // Add event listeners to ALL relevant inputs for real-time recalculation
+        ['weight', 'height', 'age', 'gender', 'goal', 'activity_level'].forEach(id => {
+            const element = document.getElementById(id);
+            // Listen to both 'change' (for dropdowns) and 'input' (for number fields)
+            element.addEventListener('change', updateDisplay);
+            element.addEventListener('input', updateDisplay);
+        });
+        
+        // Initial calculation on page load
+        updateDisplay();
+    </script>
+</body>
+</html>

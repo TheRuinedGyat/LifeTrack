@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>🍎 Log Food - LifeTrack</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Food-specific styling */
+    body {
+      background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+    .food-entry {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .food-entry strong {
+      color: #4CAF50;
+      font-size: 16px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+    }
+    .multi-select-option:hover { background: #f8f9fa; }
+    .multi-select-left { flex: 1; }
+    .multi-select-actions { margin-left: 10px; }
+    
+    /* Delete button styling */
+    .delete-btn {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    }
+    .delete-btn:hover {
+      background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Visual feedback when deleting */
+    .multi-select-option[data-deleting="true"] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .multi-select-option[data-deleting="true"] .delete-btn {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    /* Main submit button styling */
+    #submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4);
+    }
+    #submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Flash message styling */
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+    
+    .flash-message {
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .flash-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .flash-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+  </style>
+</head>
+<body>
+  {% include 'base_header.html' %}
+  <div class="container">
+    <h2>🍎 Log Food</h2>
+    
+    <!-- Flash Messages from Server -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Client-side validation message -->
+    <div id="validation-message" class="alert" style="display:none; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"></div>
+    
+    <form method="post" id="food-form">
+      <!-- Filter buttons for food categories -->
+      <div class="chip-group" id="food-chips">
+        <span class="chip active" onclick="filterFood('all', this)">All</span>
+        {% set all_food_cats = [] %}
+        {% for f in foods %}
+          {% for cat in f.categories %}
+            {% if cat not in all_food_cats %}
+              {% set _ = all_food_cats.append(cat) %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        {% for cat in all_food_cats %}
+          <span class="chip" onclick="filterFood('{{ cat }}', this)">{{ cat|replace('_',' ')|capitalize }}</span>
+        {% endfor %}
+      </div>
+
+      <!-- Search input -->
+      <label for="foodMulti"><b>Foods:</b></label>
+      <input type="text" id="foodSearch" class="search-input" placeholder="Search foods..." onkeyup="filterFoodCheckboxes()">
+
+      <!-- Food selection list -->
+      <div id="foodMulti" class="multi-select-list">
+        {% for f in foods %}
+        <div class="multi-select-option" data-cats="{{ f.categories|join(',') }}">
+          <div class="multi-select-left">
+            <label class="multi-label">
+              <input type="checkbox" name="foods" value="{{ f.name }}" id="food_{{ loop.index }}" onchange="updateFoodInputs()">
+              {{ f.name }} ({{ f.calories }} kcal)
+            </label>
+          </div>
+          {% if session.user == 'admin' or f.creator == user.username %}
+          <button type="button" class="delete-btn" title="Delete" onclick="deleteFood('{{ f.name }}', this)">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Selected foods input fields -->
+      <div id="selectedFoods"></div>
+
+      <!-- Add food link -->
+      <a class="green-btn" href="{{ url_for('food.add_food') }}">+ Add Food</a>
+
+      <!-- Submit button -->
+      <button type="submit" id="submit-btn">
+        <span id="submit-text">Log Food(s)</span>
+        <span id="submit-loading" style="display:none;">
+          <i class="fa fa-spinner fa-spin"></i> Logging...
+        </span>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    let isSubmitting = false;
+
+    function updateFoodInputs() {
+      const checked = document.querySelectorAll('#foodMulti input[type="checkbox"]:checked');
+      const container = document.getElementById('selectedFoods');
+      container.innerHTML = '';
+      
+      checked.forEach(cb => {
+        const name = cb.value;
+        const entry = document.createElement('div');
+        entry.className = 'food-entry';
+        entry.innerHTML = `
+          <strong>🍎 ${name}</strong>
+          <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;">
+            <label>📏 Amount (g): <input type="number" name="amount_${name}" min="0" step="0.1" style="width:80px;" required></label>
+          </div>
+        `;
+        container.appendChild(entry);
+      });
+      
+      if (checked.length > 0) {
+        document.getElementById('validation-message').style.display = 'none';
+      }
+    }
+
+    function deleteFood(name, btn) {
+      if (!confirm(`Are you sure you want to delete "${name}"?`)) return;
+      
+      const option = btn.closest('.multi-select-option');
+      option.setAttribute('data-deleting', 'true');
+      btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+      
+      fetch(`{{ url_for('food.delete_food', name='__NAME__') }}`.replace('__NAME__', encodeURIComponent(name)), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      .then(response => {
+        if (response.ok) {
+          option.remove();
+          updateFoodInputs();
+          showValidationMessage(`"${name}" deleted successfully!`, 'success');
+        } else {
+          throw new Error('Delete failed');
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting food:', error);
+        showValidationMessage('Failed to delete food. Please try again.', 'error');
+        option.removeAttribute('data-deleting');
+        btn.innerHTML = '<i class="fa-solid fa-trash-can"></i>';
+      });
+    }
+
+    function filterFood(cat, chip) {
+      document.querySelectorAll('#food-chips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      
+      const options = document.querySelectorAll('#foodMulti .multi-select-option');
+      options.forEach(option => {
+        const shouldShow = cat === 'all' || option.dataset.cats.includes(cat);
+        option.style.display = shouldShow ? '' : 'none';
+        
+        if (!shouldShow) {
+          const checkbox = option.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.checked = false;
+        }
+      });
+      
+      updateFoodInputs();
+    }
+
+    function filterFoodCheckboxes() {
+      const query = document.getElementById('foodSearch').value.toLowerCase();
+      const options = document.querySelectorAll('#foodMulti .multi-select-option');
+      
+      options.forEach(option => {
+        const label = option.innerText.toLowerCase();
+        const shouldShow = label.includes(query);
+        option.style.display = shouldShow ? '' : 'none';
+        
+        if (!shouldShow) {
+          const checkbox = option.querySelector('input[type="checkbox"]');
+          if (checkbox) checkbox.checked = false;
+        }
+      });
+      
+      updateFoodInputs();
+    }
+
+    function showValidationMessage(message, type = 'error') {
+      const container = document.getElementById('validation-message');
+      container.innerHTML = message;
+      container.style.display = 'block';
+      
+      if (type === 'success') {
+        container.style.background = '#d4edda';
+        container.style.color = '#155724';
+        container.style.border = '1px solid #c3e6cb';
+      } else {
+        container.style.background = '#f8d7da';
+        container.style.color = '#721c24';
+        container.style.border = '1px solid #f5c6cb';
+      }
+      
+      setTimeout(() => {
+        container.style.transition = 'opacity 0.5s ease';
+        container.style.opacity = '0';
+        setTimeout(() => {
+          container.style.display = 'none';
+          container.style.opacity = '1';
+        }, 500);
+      }, 5000);
+    }
+
+    document.getElementById('food-form').addEventListener('submit', function(e) {
+      if (isSubmitting) {
+        e.preventDefault();
+        return false;
+      }
+      
+      const checked = document.querySelectorAll('#foodMulti input[type="checkbox"]:checked');
+      
+      if (checked.length === 0) {
+        e.preventDefault();
+        showValidationMessage('Please select at least one food item.');
+        return false;
+      }
+      
+      let missingAmounts = false;
+      checked.forEach(cb => {
+        const name = cb.value;
+        const amountInput = document.querySelector(`input[name="amount_${name}"]`);
+        if (!amountInput || !amountInput.value || parseFloat(amountInput.value) <= 0) {
+          missingAmounts = true;
+        }
+      });
+      
+      if (missingAmounts) {
+        e.preventDefault();
+        showValidationMessage('Please enter valid amounts for all selected foods.');
+        return false;
+      }
+      
+      isSubmitting = true;
+      document.getElementById('submit-text').style.display = 'none';
+      document.getElementById('submit-loading').style.display = 'inline';
+      document.getElementById('submit-btn').disabled = true;
+      
+      return true;
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      updateFoodInputs();
+      
+      const flashMessages = document.querySelectorAll('.flash-message');
+      flashMessages.forEach(message => {
+        setTimeout(() => {
+          message.style.transition = 'opacity 0.5s ease';
+          message.style.opacity = '0';
+          setTimeout(() => {
+            message.remove();
+          }, 500);
+        }, 5000);
+      });
+    });
+  </script>
+</body>
+</html>

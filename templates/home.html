@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: url('{{ url_for("static", filename="image/background.jpg") }}') center/cover fixed;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+    }
+    
+    h1 { color: #333; text-align: center; margin-bottom: 25px; }
+    
+    .streak-section {
+      text-align: center;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(102, 126, 234, 0.1);
+      border-radius: 10px;
+      border-left: 4px solid #667eea;
+    }
+    
+    .main-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 25px;
+      margin: 25px 0;
+    }
+    
+    .section {
+      background: rgba(255, 255, 255, 0.7);
+      padding: 20px;
+      border-radius: 15px;
+    }
+    
+    .section h3 { color: #667eea; margin-bottom: 15px; }
+    
+    .progress-item {
+      margin-bottom: 15px;
+    }
+    
+    .progress-bar {
+      background: #f0f0f0;
+      border-radius: 10px;
+      height: 12px;
+      margin-top: 5px;
+    }
+    
+    .progress-bar-inner {
+      height: 100%;
+      border-radius: 10px;
+      transition: width 0.4s;
+    }
+    
+    .progress-bar-inner { background: linear-gradient(90deg, #667eea, #764ba2); }
+    .progress-bar-inner.protein { background: #4caf50; }
+    .progress-bar-inner.carbs { background: #2196F3; }
+    .progress-bar-inner.fat { background: #ff9800; }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      margin-top: 20px;
+    }
+    
+    .compact-card {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 15px;
+      border-radius: 10px;
+      text-align: center;
+      transition: transform 0.3s;
+    }
+    
+    .compact-card:hover { transform: translateY(-3px); }
+    .compact-card h4 { margin: 0 0 8px 0; font-size: 0.9em; }
+    .compact-card p { margin: 0; font-size: 1.3em; font-weight: bold; }
+    
+    .sort-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    
+    .sort-bar input[type="date"] {
+      padding: 8px 12px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      background: white;
+    }
+    
+    .sort-bar input[type="date"]:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+    
+    .btn {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: transform 0.3s;
+    }
+    
+    .btn:hover { transform: translateY(-2px); }
+    .btn.secondary { background: #888; }
+    .btn.danger { background: #f44336; padding: 8px; width: 32px; height: 32px; }
+    
+    .logs-container {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    
+    .logs-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .log-item {
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-left: 4px solid #667eea;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: white;
+    }
+    
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-weight: bold;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .log-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .log-date { color: #666; font-size: 0.9em; }
+    .log-privacy { color: #999; font-size: 0.8em; }
+    
+    .log-actions {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    
+    .log-content { margin-top: 10px; font-size: 0.9em; color: #555; }
+    .log-content b { color: #333; }
+    .log-content .totals { margin-left: 15px; font-size: 0.85em; color: #666; }
+    
+    /* NEW: Separate each food/workout item */
+    .food-item, .workout-item {
+      background: #f8f9fa;
+      padding: 8px 12px;
+      margin: 5px 0;
+      border-radius: 6px;
+      border-left: 3px solid #667eea;
+    }
+    
+    /* Better separation for food and workout items */
+    .food-item {
+      background: #e8f5e8;
+      border-left-color: #4caf50;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid #4caf50;
+    }
+
+    .workout-item {
+      background: #fff3e0;
+      border-left-color: #ff9800;
+      margin: 8px 0;
+      padding: 12px;
+      border-radius: 8px;
+      border-left: 4px solid #ff9800;
+    }
+
+    .food-item strong {
+      color: #2e7d32;
+    }
+
+    .workout-item strong {
+      color: #f57c00;
+    }
+
+    .food-item small {
+      color: #4caf50;
+      font-weight: 500;
+    }
+
+    .workout-item small {
+      color: #ff9800;
+      font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+      .main-content { grid-template-columns: 1fr; }
+      .container { margin: 10px; padding: 15px; }
+      .log-header { flex-direction: column; align-items: flex-start; }
+      .log-actions { align-self: flex-end; }
+    }
+  </style>
+</head>
+<body>
+  {% include 'base_header.html' %}
+  <div class="container">
+    <h1>👋 Welcome {{ session['user'] }}</h1>
+    
+    <div class="streak-section">
+      <p>🔥 Current Streak: <strong>{{ streak }} days</strong></p>
+    </div>
+
+    <div class="main-content">
+      <div class="section">
+        <h3>📊 Today's Progress & Stats</h3>
+        
+        <div class="progress-item">
+          <div>⛽ Calories: {{ today_calories }}/{{ user.profile.calorie_goal or 0 }} kcal</div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner calories" style="width: {{ (today_calories / (user.profile.calorie_goal or 1) * 100) if user.profile.calorie_goal else 0 }}%;"></div>
+          </div>
+        </div>
+        
+        <div class="progress-item">
+          <div>🥩 Protein: {{ macros.protein or 0 }}/{{ user.profile.protein_goal or 0 }} g</div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner protein" style="width: {{ ((macros.protein or 0) / (user.profile.protein_goal or 1) * 100) if user.profile.protein_goal else 0 }}%;"></div>
+          </div>
+        </div>
+        
+        <div class="progress-item">
+          <div>🍞 Carbs: {{ macros.carbs or 0 }}/{{ user.profile.carb_goal or 0 }} g</div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner carbs" style="width: {{ ((macros.carbs or 0) / (user.profile.carb_goal or 1) * 100) if user.profile.carb_goal else 0 }}%;"></div>
+          </div>
+        </div>
+        
+        <div class="progress-item">
+          <div>🍔 Fat: {{ macros.fat or 0 }}/{{ user.profile.fat_goal or 0 }} g</div>
+          <div class="progress-bar">
+            <div class="progress-bar-inner fat" style="width: {{ ((macros.fat or 0) / (user.profile.fat_goal or 1) * 100) if user.profile.fat_goal else 0 }}%;"></div>
+          </div>
+        </div>
+        
+        <div class="stats-grid">
+          <div class="compact-card">
+            <h4>Total Logs</h4>
+            <p>{{ total_entries }}</p>
+          </div>
+          <div class="compact-card">
+            <h4>Avg Daily Calories</h4>
+            <p>{{ avg_calories or 'N/A' }}</p>
+          </div>
+          <div class="compact-card">
+            <h4>Today's Calories</h4>
+            <p>{{ today_calories or '0' }}</p>
+          </div>
+          <div class="compact-card">
+            <h4>Fav Workout</h4>
+            <p>{{ favorite_workout }}</p>
+          </div>
+          <div class="compact-card">
+            <h4>Fav Food</h4>
+            <p>{{ favorite_food }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h3>📝 Recent Logs</h3>
+        <div class="sort-bar">
+          <label for="log-date">Pick a day:</label>
+          <input type="date" id="log-date">
+          <button class="btn" onclick="showToday()">Today</button>
+          <button class="btn" onclick="showAll()">All</button>
+        </div>
+        <div class="logs-container">
+          <ul id="logs-list" class="logs-list">
+            {% for e in entries|reverse %}
+              <li class="log-item" data-date="{{ e.date }}">
+                <div class="log-header">
+                  <div class="log-meta">
+                    <span class="log-date">{{ e.date }}</span>
+                    <span class="log-privacy">[{{ 'Private' if e.privacy != 'Public' else 'Public' }}]</span>
+                    {% if e.user == session['user'] %}
+                      <span style="color: #667eea; font-size: 0.8em;">✓ Your log</span>
+                    {% endif %}
+                  </div>
+                  {% if e.user == session['user'] %}
+                    <div class="log-actions">
+                      <form method="post" action="{{ url_for('edit_log_date', log_id=e.actual_index) }}" style="display:inline;">
+                        <input type="date" name="date" value="{{ e.date }}" style="width:120px;" onchange="this.nextElementSibling.style.display='inline'">
+                        <button type="submit" class="btn" style="display:none;">Save</button>
+                      </form>
+                      <form method="post" action="{{ url_for('toggle_log_privacy', log_id=e.actual_index) }}" style="display:inline;">
+                        <button type="submit" class="btn secondary">
+                          {{ 'Make Public' if e.privacy != 'Public' else 'Make Private' }}
+                        </button>
+                      </form>
+                      <form method="post" action="{{ url_for('delete_log', log_id=e.actual_index) }}" style="display:inline;" onsubmit="return confirm('Delete this entire log entry?');">
+                        <button type="submit" class="btn danger">🗑️</button>
+                      </form>
+                    </div>
+                  {% endif %}
+                </div>
+                <div class="log-content">
+                  {% if e.foods and e.workouts %}
+                    <!-- Mixed entry (shouldn't happen with new system, but just in case) -->
+                    <div style="background: #fff3cd; padding: 10px; border-radius: 6px; margin-bottom: 10px;">
+                      <b>🍽️ Foods & 💪 Workouts Combined:</b>
+                    </div>
+                  {% endif %}
+                  
+                  {% if e.foods %}
+                    <div>
+                      <b>🍽️ Foods:</b>
+                      {% for f in e.foods %}
+                        <div class="food-item">
+                          <strong>{{ f.name }}</strong>
+                          {% if f.amount %} ({{ f.amount }}g){% endif %}
+                          {% if f.calories %} - {{ (f.calories * (f.amount or 100) / 100)|round }}cal{% endif %}
+                          {% if f.protein or f.carbs or f.fat %}
+                            <br><small>P: {{ ((f.protein or 0) * (f.amount or 100) / 100)|round(1) }}g • C: {{ ((f.carbs or 0) * (f.amount or 100) / 100)|round(1) }}g • F: {{ ((f.fat or 0) * (f.amount or 100) / 100)|round(1) }}g</small>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                      <div class="totals">
+                        <b>Food Totals:</b> P: {{ e.total_protein }}g • C: {{ e.total_carbs }}g • F: {{ e.total_fat }}g • Cal: {{ e.total_cal }}
+                      </div>
+                    </div>
+                  {% endif %}
+                  
+                  {% if e.workouts %}
+                    <div style="margin-top: 10px;">
+                      <b>💪 Workouts:</b>
+                      {% for w in e.workouts %}
+                        <div class="workout-item">
+                          <strong>{{ w.name }}</strong>
+                          {% if w.sets or w.reps or w.weight or w.duration or w.speed %}
+                            <br><small>
+                              {% if w.sets %}{{ w.sets }} sets{% endif %}
+                              {% if w.reps %} × {{ w.reps }} reps{% endif %}
+                              {% if w.weight %} @ {{ w.weight }}kg{% endif %}
+                              {% if w.duration %} for {{ w.duration }} min{% endif %}
+                              {% if w.speed %} at {{ w.speed }} km/h{% endif %}
+                            </small>
+                          {% endif %}
+                        </div>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  
+                  {% if not e.foods and not e.workouts %}
+                    <div style="color: #999; font-style: italic;">Empty log entry</div>
+                  {% endif %}
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+    <script>
+    // Helper: return local date in YYYY-MM-DD (uses client's local timezone)
+    function getLocalISODate() {
+      const d = new Date();
+      const y = d.getFullYear();
+      const m = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      return `${y}-${m}-${day}`;
+    }
+
+    // Date filter: updates visible logs and macros
+    document.getElementById('log-date').addEventListener('change', function() {
+      const selected = this.value;
+      document.querySelectorAll('.log-item').forEach(li => {
+        li.style.display = (!selected || li.dataset.date === selected) ? '' : 'none';
+      });
+
+      // UPDATE MACROS FOR SELECTED DATE (use local date if none selected)
+      const targetDate = selected || getLocalISODate();
+      updateMacrosForDate(targetDate);
+    });
+
+    function showToday() {
+      const today = getLocalISODate();
+      document.getElementById('log-date').value = today;
+      document.getElementById('log-date').dispatchEvent(new Event('change'));
+    }
+
+    function showAll() {
+      // Show all logs, but keep today's macros visible
+      document.getElementById('log-date').value = '';
+      document.querySelectorAll('.log-item').forEach(li => li.style.display = '');
+
+      // SHOW TODAY'S MACROS WHEN SHOWING ALL (use local date)
+      const today = getLocalISODate();
+      updateMacrosForDate(today);
+    }
+
+    // Fetch and update macros for selected date
+    function updateMacrosForDate(targetDate) {
+      // Show loading state
+      document.querySelectorAll('.progress-item').forEach(item => {
+        item.style.opacity = '0.5';
+      });
+
+      // Fetch macros for the selected date
+      fetch(`/get_date_macros/${targetDate}`)
+        .then(response => {
+          if (!response.ok) throw new Error('Network response was not ok');
+          return response.json();
+        })
+        .then(macros => {
+          // Update progress bars with fetched data
+          const userGoals = {
+            protein: {{ user.profile.protein_goal or 0 }},
+            carbs: {{ user.profile.carb_goal or 0 }},
+            fat: {{ user.profile.fat_goal or 0 }},
+            calories: {{ user.profile.calorie_goal or 0 }}
+          };
+
+          updateProgressBar('protein', macros.protein || 0, userGoals.protein);
+          updateProgressBar('carbs', macros.carbs || 0, userGoals.carbs);
+          updateProgressBar('fat', macros.fat || 0, userGoals.fat);
+          updateProgressBar('calories', macros.calories || 0, userGoals.calories);
+
+          // Remove loading state
+          document.querySelectorAll('.progress-item').forEach(item => {
+            item.style.opacity = '1';
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching macros:', error);
+          // Remove loading state on error
+          document.querySelectorAll('.progress-item').forEach(item => {
+            item.style.opacity = '1';
+          });
+        });
+    }
+
+    // Helper function to update progress bars
+    function updateProgressBar(type, current, goal) {
+      // Find the progress bar by looking for the specific class
+      const progressBars = document.querySelectorAll('.progress-bar-inner');
+      let targetBar = null;
+
+      progressBars.forEach(bar => {
+        if (bar.className.includes(type)) {
+          targetBar = bar;
+        }
+      });
+
+      if (targetBar) {
+        const container = targetBar.closest('.progress-item');
+        const label = container.querySelector('div');
+
+        if (type === 'calories') {
+          label.textContent = `⛽ Calories: ${Math.round(current)}/${goal} kcal`;
+        } else if (type === 'protein') {
+          label.textContent = `🥩 Protein: ${Math.round(current)}/${goal} g`;
+        } else if (type === 'carbs') {
+          label.textContent = `🍞 Carbs: ${Math.round(current)}/${goal} g`;
+        } else if (type === 'fat') {
+          label.textContent = `🍔 Fat: ${Math.round(current)}/${goal} g`;
+        }
+
+        const percentage = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
+        targetBar.style.width = `${percentage}%`;
+      }
+    }
+
+    // Initialize: show today's logs and macros by default
+    window.addEventListener('DOMContentLoaded', function() {
+      const today = getLocalISODate();
+      // Set date picker and trigger change to filter logs and update macros
+      document.getElementById('log-date').value = today;
+      document.getElementById('log-date').dispatchEvent(new Event('change'));
+    });
+    </script>
+</body>
+</html>

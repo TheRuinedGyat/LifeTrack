@@ -1,0 +1,514 @@
+[
+  {
+    "name": "Bench Press",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Squat",
+    "categories": [
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Deadlift",
+    "categories": [
+      "back",
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Pull Up",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Push Up",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Overhead Press",
+    "categories": [
+      "shoulders",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Barbell Row",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Lat Pulldown",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Bicep Curl",
+    "categories": [
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Tricep Extension",
+    "categories": [
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Lateral Raise",
+    "categories": [
+      "shoulders"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Leg Press",
+    "categories": [
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Leg Curl",
+    "categories": [
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Leg Extension",
+    "categories": [
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Calf Raise",
+    "categories": [
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Crunch",
+    "categories": [
+      "abs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Plank",
+    "categories": [
+      "abs",
+      "core"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Russian Twist",
+    "categories": [
+      "abs",
+      "core"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Mountain Climber",
+    "categories": [
+      "abs",
+      "cardio"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Burpee",
+    "categories": [
+      "cardio",
+      "full-body"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Jump Rope",
+    "categories": [
+      "cardio"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Running",
+    "categories": [
+      "cardio",
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Cycling",
+    "categories": [
+      "cardio",
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Swimming",
+    "categories": [
+      "cardio",
+      "full-body"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Dumbbell Fly",
+    "categories": [
+      "chest"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Incline Bench Press",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Decline Bench Press",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Chest Dip",
+    "categories": [
+      "chest",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Seated Row",
+    "categories": [
+      "back",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Face Pull",
+    "categories": [
+      "shoulders",
+      "back"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Hammer Curl",
+    "categories": [
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Preacher Curl",
+    "categories": [
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Skullcrusher",
+    "categories": [
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Cable Kickback",
+    "categories": [
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Hip Thrust",
+    "categories": [
+      "glutes",
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Glute Bridge",
+    "categories": [
+      "glutes",
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Step Up",
+    "categories": [
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Lunge",
+    "categories": [
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Bulgarian Split Squat",
+    "categories": [
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Farmer's Walk",
+    "categories": [
+      "full-body"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Arnold Press",
+    "categories": [
+      "shoulders",
+      "arms"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Reverse Fly",
+    "categories": [
+      "shoulders",
+      "back"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Shrug",
+    "categories": [
+      "shoulders"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Side Plank",
+    "categories": [
+      "core",
+      "abs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Hanging Leg Raise",
+    "categories": [
+      "abs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Toe Touch",
+    "categories": [
+      "abs"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Superman",
+    "categories": [
+      "back",
+      "core"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Flutter Kick",
+    "categories": [
+      "abs",
+      "core"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Box Jump",
+    "categories": [
+      "legs",
+      "cardio"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Run",
+    "categories": [
+      "legs",
+      "glutes",
+      "cardio"
+    ],
+    "creator": "system",
+    "pending_approval": false,
+    "public": true
+  },
+  {
+    "name": "Rowing",
+    "categories": [
+      "cardio",
+      "full-body"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Battle Rope",
+    "categories": [
+      "cardio",
+      "arms",
+      "shoulders"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Kettlebell Swing",
+    "categories": [
+      "full-body",
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Medicine Ball Slam",
+    "categories": [
+      "full-body",
+      "core"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Sled Push",
+    "categories": [
+      "legs",
+      "glutes",
+      "cardio"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Sled Pull",
+    "categories": [
+      "legs",
+      "glutes",
+      "cardio"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Tire Flip",
+    "categories": [
+      "full-body",
+      "legs",
+      "glutes"
+    ],
+    "public": true,
+    "creator": "system"
+  },
+  {
+    "name": "Agility Ladder Drill",
+    "categories": [
+      "cardio",
+      "legs"
+    ],
+    "public": true,
+    "creator": "system"
+  }
+]

@@ -1,0 +1,1963 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Log Activity</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      position: relative;
+    }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(8px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .log-container {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .log-header {
+  
+      padding: 40px 30px;
+      border-radius: 20px;
+      margin-bottom: 50px;
+
+    }
+    
+    .log-title {
+      font-size: 2.5em;
+      color: #667eea;
+      margin-bottom: 15px;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(255,255,255,0.8);
+    }
+    
+    .log-subtitle {
+      font-size: 1.2em;
+      color: #764ba2;
+      margin-bottom: 0;
+      font-weight: 400;
+      text-shadow: 1px 1px 2px rgba(255,255,255,0.8);
+    }
+    
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 30px;
+      margin-bottom: 40px;
+    }
+    
+    .choice-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 40px 30px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: white;
+      transition: all 0.15s ease;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    
+    .choice-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+      text-decoration: none;
+      color: white;
+    }
+    
+    .choice-card.workout {
+      background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+    }
+    
+    .choice-card.food {
+      background: linear-gradient(135deg, #4ecdc4 0%, #26d0ce 100%);
+    }
+    
+    .choice-card.templates {
+      background: linear-gradient(135deg, #a8e6cf 0%, #88d8a3 100%);
+    }
+    
+    .choice-icon {
+      font-size: 4em;
+      margin-bottom: 20px;
+      display: block;
+    }
+    
+    .choice-title {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin-bottom: 15px;
+    }
+    
+    .choice-description {
+      font-size: 1.1em;
+      opacity: 0.9;
+      line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    
+    .choice-action {
+      font-size: 1.2em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    
+    .choice-action::after {
+      content: '→';
+      transition: transform 0.3s ease;
+    }
+    
+    .choice-card:hover .choice-action::after {
+      transform: translateX(5px);
+    }
+    
+    .decorative-element {
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 100px;
+      height: 100px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    
+    /* Template Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0,0,0,0.7);
+    }
+    
+    .modal-content {
+      background: rgba(255, 255, 255, 0.98);
+      margin: 2% auto;
+      padding: 30px;
+      border-radius: 20px;
+      width: 95%;
+      max-width: 1200px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+    
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      position: absolute;
+      right: 20px;
+      top: 15px;
+      transition: color 0.3s ease;
+    }
+    
+    .close:hover {
+      color: #667eea;
+    }
+
+    .btn-edit {
+      background: #4ecdc4 !important;
+      border: none !important;
+    }
+
+    .btn-edit:hover {
+      background: #26d0ce !important;
+    }
+
+    .edit-form {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      border: 2px solid #d0d8e0;
+      display: none;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    
+    .edit-form.active {
+      display: block !important;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 600;
+      color: #495057;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 2px solid #d0d8e0;
+      border-radius: 8px;
+      font-size: 14px;
+    }
+
+    .item-editor {
+      background: white;
+      padding: 10px;
+      margin: 8px 0;
+      border-radius: 8px;
+      border: 2px solid #e9ecef;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .item-editor input {
+      flex: 1;
+      min-width: 80px;
+      padding: 8px;
+      border: 1px solid #d0d8e0;
+      border-radius: 5px;
+    }
+
+    .item-editor select {
+      flex: 2;
+      min-width: 150px;
+    }
+
+    .item-editor button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .btn-remove-item {
+      background: #ff6b6b;
+      color: white;
+    }
+
+    .btn-remove-item:hover {
+      background: #ee5a24;
+    }
+    
+    .btn-secondary {
+      background: #6c757d;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+    
+    .modal-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .modal-title {
+      color: #667eea;
+      font-size: 2.2em;
+      margin: 0;
+      font-weight: 700;
+    }
+    
+    .tab-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 40px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .tab-btn {
+      padding: 15px 30px;
+      background: #f8f9fa;
+      border: 4px solid #d0d8e0;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.15s ease;
+      color: #495057;
+    }
+    
+    .tab-btn.active {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border-color: #667eea;
+      border-width: 4px;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+    }
+    
+    .tab-btn:hover:not(.active) {
+      background: #e9ecef;
+      border-color: #667eea;
+      transform: translateY(-1px);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .template-item {
+      background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+      padding: 25px;
+      margin: 20px 0;
+      border-radius: 15px;
+      border: 3px solid #e9ecef;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+      transition: all 0.15s ease;
+    }
+    
+    .template-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+      border-color: #667eea;
+    }
+    
+    .template-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    
+    .template-name {
+      font-weight: 700;
+      font-size: 1.4em;
+      color: #333;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .template-stats {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .stat-badge {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    
+    .stat-badge.food {
+      background: linear-gradient(135deg, #4ecdc4, #26d0ce);
+    }
+    
+    .stat-badge.workout {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    }
+    
+    .template-content {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    
+    .template-section {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      border: 2px solid #e9ecef;
+    }
+    
+    .section-title {
+      font-weight: 600;
+      color: #495057;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .item-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    
+    .item-entry {
+      background: white;
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 2px solid #dee2e6;
+      font-size: 0.9em;
+      color: #495057;
+    }
+    
+    .template-actions {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    
+    .btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      width: 100%;
+      padding: 15px;
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 30px;
+    }
+    
+    .btn-success {
+      background: linear-gradient(135deg, #28a745, #20c997);
+      color: white;
+      flex: 1;
+    }
+    
+    .btn-danger {
+      background: linear-gradient(135deg, #dc3545, #e74c3c);
+      color: white;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+    
+    .form-container {
+      background: #f8f9fa;
+      padding: 30px;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+    }
+    
+    .form-group {
+      margin-bottom: 25px;
+      text-align: left;
+    }
+    
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #333;
+      font-size: 1.1em;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .checkbox-group {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+      margin-bottom: 25px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    .checkbox-group label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #495057;
+      padding: 10px 15px;
+      border-radius: 10px;
+      border: 2px solid #e9ecef;
+      transition: all 0.3s ease;
+    }
+    
+    .checkbox-group label:hover {
+      background: #f8f9fa;
+      border-color: #667eea;
+    }
+    
+    .checkbox-group input[type="checkbox"] {
+      transform: scale(1.3);
+      accent-color: #667eea;
+    }
+    
+    .checkbox-group input[type="checkbox"]:checked + span {
+      color: #667eea;
+      font-weight: 700;
+    }
+    
+    /* Enhanced multi-select styling */
+    .multi-select-container {
+      margin-bottom: 30px;
+      background: white;
+      padding: 20px;
+      border-radius: 15px;
+      border: 2px solid #e9ecef;
+    }
+    
+    .multi-select-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+    
+    .multi-select-title {
+      font-size: 1.2em;
+      font-weight: 600;
+      color: #333;
+    }
+    
+    .item-counter {
+      background: #667eea;
+      color: white;
+      padding: 5px 12px;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+    
+    .search-input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 14px;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .chip-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .chip {
+      padding: 8px 18px;
+      background: #f8f9fa;
+      border: 2px solid #e9ecef;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 0.9em;
+      font-weight: 600;
+      user-select: none;
+    }
+    
+    .chip.active {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+      transform: translateY(-2px);
+      box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+    }
+    
+    .chip:hover:not(.active) {
+      background: #e9ecef;
+      border-color: #667eea;
+      transform: translateY(-1px);
+    }
+    
+    .multi-select-list {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 2px solid #e9ecef;
+      border-radius: 12px;
+      background: white;
+    }
+    
+    .multi-select-option {
+      display: flex;
+      align-items: flex-start;
+      padding: 15px 20px;
+      border-bottom: 1px solid #f0f0f0;
+      transition: background-color 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .multi-select-option:hover {
+      background: #f8f9fa;
+    }
+    
+    .multi-select-option:last-child {
+      border-bottom: none;
+    }
+    
+    .multi-select-option input[type="checkbox"] {
+      margin-right: 15px;
+      margin-top: 3px;
+      width: 18px;
+      height: 18px;
+      transform: none;
+      accent-color: #667eea;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    
+    .multi-select-option .option-content {
+      flex: 1;
+    }
+    
+    .option-label {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 5px;
+    }
+    
+    .option-details {
+      font-size: 0.85em;
+      color: #666;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    
+    .option-param {
+      background: #f8f9fa;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.9em;
+      color: #495057;
+    }
+    
+    .param-inputs {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+      flex-wrap: wrap;
+    }
+    
+    .param-input {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      background: #f8f9fa;
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid #e0e0e0;
+    }
+    
+    .param-input input {
+      width: 70px;
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 0.85em;
+    }
+    
+    .param-input label {
+      font-size: 0.85em;
+      color: #666;
+      font-weight: 600;
+    }
+    
+    .selected-items-preview {
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+      border: 2px solid rgba(102, 126, 234, 0.3);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 30px;
+      text-align: left;
+    }
+    
+    .selected-items-preview h4 {
+      margin: 0 0 15px 0;
+      color: #667eea;
+      font-size: 1.3em;
+      font-weight: 600;
+    }
+    
+    .selected-item-tag {
+      display: inline-block;
+      background: #667eea;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85em;
+      font-weight: 600;
+      margin: 3px 5px 3px 0;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #666;
+    }
+    
+    .empty-state i {
+      font-size: 3em;
+      margin-bottom: 15px;
+      color: #ccc;
+    }
+    
+    .empty-state p {
+      font-size: 1.1em;
+      margin-bottom: 20px;
+    }
+    
+    @media (max-width: 768px) {
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .log-title {
+        font-size: 2em;
+      }
+      
+      .choice-card {
+        padding: 30px 20px;
+      }
+      
+      .choice-icon {
+        font-size: 3em;
+      }
+      
+      .choice-title {
+        font-size: 1.5em;
+      }
+      
+      .modal-content {
+        margin: 5% auto;
+        width: 98%;
+        padding: 20px;
+      }
+      
+      .tab-buttons {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .checkbox-group {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      
+      .template-content {
+        grid-template-columns: 1fr;
+      }
+      
+      .template-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      
+      .template-stats {
+        justify-content: flex-start;
+      }
+      
+      .template-actions {
+        flex-direction: column;
+      }
+    }
+    
+    /* Edit Modal - Overlay Styles */
+    #editModal {
+      display: none;
+      position: fixed;
+      z-index: 2000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      overflow-y: auto;
+    }
+    
+    #editModal.show {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .edit-modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 700px;
+      width: 95%;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+    }
+    
+    .edit-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 2px solid #f0f0f0;
+    }
+    
+    .edit-modal-title {
+      font-size: 1.8em;
+      color: #667eea;
+      font-weight: 700;
+      margin: 0;
+    }
+    
+    .edit-modal-close {
+      background: none;
+      border: none;
+      font-size: 28px;
+      color: #aaa;
+      cursor: pointer;
+      padding: 0;
+      width: 30px;
+      height: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .edit-modal-close:hover {
+      color: #667eea;
+    }
+  </style>
+</head>
+<body>
+  {% include 'base_header.html' %}
+  
+  <div class="log-container">
+    <div class="log-header">
+      <h1 class="log-title">🎯 Log Your Activity</h1>
+      <p class="log-subtitle">Choose what you'd like to track today</p>
+    </div>
+    
+    <div class="choice-grid">
+      <a href="{{ url_for('workout.log_workout') }}" class="choice-card workout">
+        <div class="decorative-element"></div>
+        <span class="choice-icon">🏋️‍♂️</span>
+        <div class="choice-title">Log Workout</div>
+        <div class="choice-description">
+          Track your exercises, sets, reps, and weights to monitor your fitness progress
+        </div>
+        <div class="choice-action">
+          Start Logging
+        </div>
+      </a>
+      
+      <a href="{{ url_for('food.log_food') }}" class="choice-card food">
+        <div class="decorative-element"></div>
+        <span class="choice-icon">🍎</span>
+        <div class="choice-title">Log Food</div>
+        <div class="choice-description">
+          Record your meals and snacks to track calories, macros, and nutrition goals
+        </div>
+        <div class="choice-action">
+          Start Logging
+        </div>
+      </a>
+      
+      <div class="choice-card templates" onclick="openTemplateModal()">
+        <div class="decorative-element"></div>
+        <span class="choice-icon">📋</span>
+        <div class="choice-title">Use Templates</div>
+        <div class="choice-description">
+          Quick log with pre-saved combinations of foods and workouts
+        </div>
+        <div class="choice-action">
+          Manage Templates
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Template Modal Overlay -->
+  <div id="editModal">
+    <div class="edit-modal-content">
+      <div class="edit-modal-header">
+        <h2 class="edit-modal-title" id="editModalTitle">Edit Template</h2>
+        <button class="edit-modal-close" onclick="closeEditModal()">&times;</button>
+      </div>
+      <div id="editModalBody"></div>
+    </div>
+  </div>
+
+  <!-- Template Modal -->
+  <div id="templateModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      
+      <div class="modal-header">
+        <h2 class="modal-title">📋 Template Manager</h2>
+      </div>
+      
+      <div class="tab-buttons">
+        <button class="tab-btn active" onclick="showTab('use', event)">
+          <i class="fa fa-play"></i> Use Templates
+        </button>
+        <button class="tab-btn" onclick="showTab('create', event)">
+          <i class="fa fa-plus"></i> Create New
+        </button>
+        <button class="tab-btn" onclick="showTab('manage', event)">
+          <i class="fa fa-cog"></i> Manage
+        </button>
+      </div>
+      
+      <!-- Use Templates Tab -->
+      <div id="use-tab" class="tab-content active">
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="templateSearch" class="search-input" placeholder="🔍 Search templates by name...">
+        </div>
+        <div id="templates-list">
+          <!-- Templates will be loaded here -->
+        </div>
+      </div>
+      
+      <!-- Create Template Tab -->
+      <div id="create-tab" class="tab-content">
+        <div class="form-container">
+          <form id="createTemplateForm">
+            <div class="form-group">
+              <label for="templateName">
+                <i class="fa fa-tag"></i> Template Name
+              </label>
+              <input type="text" id="templateName" name="name" required placeholder="e.g., Arm Day, Leg Day Monday, Post-Workout Meal">
+            </div>
+            
+            <div class="checkbox-group">
+              <label>
+                <input type="checkbox" id="includeFoods" checked>
+                <span>🍎 Include Foods</span>
+              </label>
+              <label>
+                <input type="checkbox" id="includeWorkouts" checked>
+                <span>💪 Include Workouts</span>
+              </label>
+            </div>
+            
+            <!-- Foods Selection -->
+            <div id="food-selection" class="multi-select-container">
+              <div class="multi-select-header">
+                <div class="multi-select-title">🍎 Select Foods</div>
+                <span class="item-counter" id="food-counter">0 selected</span>
+              </div>
+              
+              <input type="text" id="foodSearch" class="search-input" placeholder="Search foods...">
+              
+              <div class="chip-group" id="food-chips">
+                <span class="chip active" onclick="filterFoodItems('all', this)">All</span>
+                <span class="chip" onclick="filterFoodItems('high-protein', this)">High Protein</span>
+                <span class="chip" onclick="filterFoodItems('vegan', this)">Vegan</span>
+                <span class="chip" onclick="filterFoodItems('cutting', this)">Cutting</span>
+                <span class="chip" onclick="filterFoodItems('bulking', this)">Bulking</span>
+              </div>
+              
+              <div id="foodMultiSelect" class="multi-select-list">
+                <!-- Foods will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Workouts Selection -->
+            <div id="workout-selection" class="multi-select-container">
+              <div class="multi-select-header">
+                <div class="multi-select-title">💪 Select Workouts</div>
+                <span class="item-counter" id="workout-counter">0 selected</span>
+              </div>
+              
+              <input type="text" id="workoutSearch" class="search-input" placeholder="Search workouts...">
+              
+              <div class="chip-group" id="workout-chips">
+                <span class="chip active" onclick="filterWorkoutItems('all', this)">All</span>
+                <span class="chip" onclick="filterWorkoutItems('chest', this)">Chest</span>
+                <span class="chip" onclick="filterWorkoutItems('back', this)">Back</span>
+                <span class="chip" onclick="filterWorkoutItems('legs', this)">Legs</span>
+                <span class="chip" onclick="filterWorkoutItems('arms', this)">Arms</span>
+                <span class="chip" onclick="filterWorkoutItems('cardio', this)">Cardio</span>
+              </div>
+              
+              <div id="workoutMultiSelect" class="multi-select-list">
+                <!-- Workouts will be loaded here -->
+              </div>
+            </div>
+            
+            <!-- Selected Items Preview -->
+            <div class="selected-items-preview" id="selectedItemsPreview" style="display: none;">
+              <h4>📋 Template Preview</h4>
+              <div id="selectedFoodsPreview"></div>
+              <div id="selectedWorkoutsPreview"></div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">
+              <i class="fa fa-plus"></i> Create Template
+            </button>
+          </form>
+        </div>
+      </div>
+      
+      <!-- Manage Templates Tab -->
+      <div id="manage-tab" class="tab-content">
+        <div style="margin-bottom: 20px;">
+          <input type="text" id="manageTemplateSearch" class="search-input" placeholder="🔍 Search templates to manage...">
+        </div>
+        <div id="manage-templates-list">
+          <!-- Templates for management will be loaded here -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let allFoods = [];
+    let allWorkouts = [];
+    let selectedFoodParams = {};  // Stores { foodName: { amount: 100 } }
+    let selectedWorkoutParams = {};  // Stores { workoutName: { sets: 3, reps: 10, weight: 50 } }
+    
+    // Modal functionality
+    const modal = document.getElementById('templateModal');
+    const closeBtn = document.querySelector('.close');
+    
+    function openTemplateModal() {
+      modal.style.display = 'block';
+      loadTemplates();
+      loadFoodsAndWorkouts();
+    }
+    
+    closeBtn.onclick = function() {
+      modal.style.display = 'none';
+    }
+    
+    window.onclick = function(event) {
+      if (event.target === modal) {
+        modal.style.display = 'none';
+      }
+    }
+    
+    // Tab functionality
+    function showTab(tabName, event) {
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      document.getElementById(tabName + '-tab').classList.add('active');
+      if (event && event.target) {
+        event.target.classList.add('active');
+      }
+      
+      if (tabName === 'use' || tabName === 'manage') {
+        loadTemplates();
+      }
+    }
+    
+    // Save food parameters
+    function saveFoodParams(foodName, amount) {
+      const food = allFoods.find(f => f.name === foodName);
+      if (food) {
+        selectedFoodParams[foodName] = {
+          ...food,
+          amount: parseInt(amount) || 100
+        };
+      }
+    }
+    
+    // Save workout parameters
+    function saveWorkoutParams(workoutName, sets, reps, weight) {
+      const workout = allWorkouts.find(w => w.name === workoutName);
+      if (workout) {
+        selectedWorkoutParams[workoutName] = {
+          ...workout,
+          sets: parseInt(sets) || 3,
+          reps: parseInt(reps) || 10,
+          weight: parseInt(weight) || 0
+        };
+      }
+    }
+    
+    // Load foods and workouts from your JSON files
+    function loadFoodsAndWorkouts() {
+      // Load foods
+      fetch('/api/foods')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load foods');
+          }
+          return response.json();
+        })
+        .then(foods => {
+          allFoods = foods;
+          console.log('✅ Loaded foods:', allFoods.length);
+          renderFoodOptions();
+        })
+        .catch(error => {
+          console.error('❌ Error loading foods:', error);
+          allFoods = [];
+          document.getElementById('foodMultiSelect').innerHTML = 
+            '<div class="empty-state"><i class="fa fa-exclamation-circle"></i><p>Error loading foods. Please refresh the page.</p></div>';
+        });
+      
+      // Load workouts
+      fetch('/api/workouts')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Failed to load workouts');
+          }
+          return response.json();
+        })
+        .then(workouts => {
+          allWorkouts = workouts;
+          console.log('✅ Loaded workouts:', allWorkouts.length);
+          renderWorkoutOptions();
+        })
+        .catch(error => {
+          console.error('❌ Error loading workouts:', error);
+          allWorkouts = [];
+          document.getElementById('workoutMultiSelect').innerHTML = 
+            '<div class="empty-state"><i class="fa fa-exclamation-circle"></i><p>Error loading workouts. Please refresh the page.</p></div>';
+        });
+    }
+    
+    function renderFoodOptions(filteredFoods = null) {
+      const container = document.getElementById('foodMultiSelect');
+      const foods = filteredFoods || allFoods;
+      
+      container.innerHTML = '';
+      
+      if (foods.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No foods available</p></div>';
+        return;
+      }
+      
+      foods.forEach(food => {
+        const safeId = food.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        const option = document.createElement('div');
+        option.className = 'multi-select-option';
+        option.innerHTML = `
+          <input type="checkbox" value="${food.name}" onchange="toggleFoodSelection('${food.name}', this.checked)" data-type="food" id="food-${safeId}">
+          <div class="option-content">
+            <div class="option-label">${food.name}</div>
+            <div class="option-details">
+              <span class="option-param">${food.calories || 0} cal</span>
+              ${food.protein ? `<span class="option-param">P: ${food.protein}g</span>` : ''}
+              ${food.carbs ? `<span class="option-param">C: ${food.carbs}g</span>` : ''}
+              ${food.fat ? `<span class="option-param">F: ${food.fat}g</span>` : ''}
+            </div>
+            <div class="param-inputs" id="params-food-${safeId}" style="display: none;">
+              <div class="param-input">
+                <label>Amount:</label>
+                <input type="number" min="1" value="100" onchange="saveFoodParams('${food.name}', this.value)">
+                <span style="font-size: 0.85em; color: #666;">g</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(option);
+      });
+    }
+    
+    function renderWorkoutOptions(filteredWorkouts = null) {
+      const container = document.getElementById('workoutMultiSelect');
+      const workouts = filteredWorkouts || allWorkouts;
+      
+      container.innerHTML = '';
+      
+      if (workouts.length === 0) {
+        container.innerHTML = '<div class="empty-state"><p>No workouts available</p></div>';
+        return;
+      }
+      
+      workouts.forEach(workout => {
+        const safeId = workout.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        const option = document.createElement('div');
+        option.className = 'multi-select-option';
+        option.innerHTML = `
+          <input type="checkbox" value="${workout.name}" onchange="toggleWorkoutSelection('${workout.name}', this.checked)" data-type="workout" id="workout-${safeId}">
+          <div class="option-content">
+            <div class="option-label">${workout.name}</div>
+            <div class="option-details">
+              <span class="option-param">${workout.categories ? workout.categories.join(', ') : 'General'}</span>
+            </div>
+            <div class="param-inputs" id="params-workout-${safeId}" style="display: none;">
+              <div class="param-input">
+                <label>Sets:</label>
+                <input type="number" min="1" value="3" onchange="updateWorkoutParam('${workout.name}', 'sets', this.value)">
+              </div>
+              <div class="param-input">
+                <label>Reps:</label>
+                <input type="number" min="1" value="10" onchange="updateWorkoutParam('${workout.name}', 'reps', this.value)">
+              </div>
+              <div class="param-input">
+                <label>Weight:</label>
+                <input type="number" min="0" value="0" onchange="updateWorkoutParam('${workout.name}', 'weight', this.value)">
+                <span style="font-size: 0.85em; color: #666;">kg</span>
+              </div>
+            </div>
+          </div>
+        `;
+        container.appendChild(option);
+      });
+    }
+    
+    function toggleFoodSelection(foodName, isChecked) {
+      const safeId = foodName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+      const paramsDiv = document.getElementById('params-food-' + safeId);
+      
+      if (isChecked) {
+        paramsDiv.style.display = 'flex';
+        const food = allFoods.find(f => f.name === foodName);
+        if (food && !selectedFoodParams[foodName]) {
+          selectedFoodParams[foodName] = { ...food, amount: 100 };
+        }
+      } else {
+        paramsDiv.style.display = 'none';
+        delete selectedFoodParams[foodName];
+      }
+      
+      updateSelectedItems();
+    }
+    
+    function toggleWorkoutSelection(workoutName, isChecked) {
+      const safeId = workoutName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+      const paramsDiv = document.getElementById('params-workout-' + safeId);
+      
+      if (isChecked) {
+        paramsDiv.style.display = 'flex';
+        const workout = allWorkouts.find(w => w.name === workoutName);
+        if (workout && !selectedWorkoutParams[workoutName]) {
+          selectedWorkoutParams[workoutName] = { ...workout, sets: 3, reps: 10, weight: 0 };
+        }
+      } else {
+        paramsDiv.style.display = 'none';
+        delete selectedWorkoutParams[workoutName];
+      }
+      
+      updateSelectedItems();
+    }
+    
+    function updateWorkoutParam(workoutName, param, value) {
+      if (!selectedWorkoutParams[workoutName]) {
+        const workout = allWorkouts.find(w => w.name === workoutName);
+        selectedWorkoutParams[workoutName] = { ...workout, sets: 3, reps: 10, weight: 0 };
+      }
+      selectedWorkoutParams[workoutName][param] = parseInt(value) || 0;
+    }
+    
+    function filterFoodItems(category, chip) {
+      document.querySelectorAll('#food-chips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      
+      let filtered = allFoods;
+      if (category !== 'all') {
+        filtered = allFoods.filter(food => 
+          food.categories && food.categories.includes(category)
+        );
+      }
+      
+      renderFoodOptions(filtered);
+      
+      // Re-check previously selected items
+      Object.keys(selectedFoodParams).forEach(foodName => {
+        const safeId = foodName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        const checkbox = document.getElementById('food-' + safeId);
+        if (checkbox) {
+          checkbox.checked = true;
+          toggleFoodSelection(foodName, true);
+        }
+      });
+    }
+    
+    function filterWorkoutItems(category, chip) {
+      document.querySelectorAll('#workout-chips .chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      
+      let filtered = allWorkouts;
+      if (category !== 'all') {
+        filtered = allWorkouts.filter(workout => 
+          workout.categories && workout.categories.includes(category)
+        );
+      }
+      
+      renderWorkoutOptions(filtered);
+      
+      // Re-check previously selected items
+      Object.keys(selectedWorkoutParams).forEach(workoutName => {
+        const safeId = workoutName.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+        const checkbox = document.getElementById('workout-' + safeId);
+        if (checkbox) {
+          checkbox.checked = true;
+          toggleWorkoutSelection(workoutName, true);
+        }
+      });
+    }
+    
+    // Search functionality
+    document.getElementById('foodSearch').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const options = document.querySelectorAll('#foodMultiSelect .multi-select-option');
+      
+      options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        option.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+    
+    document.getElementById('workoutSearch').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const options = document.querySelectorAll('#workoutMultiSelect .multi-select-option');
+      
+      options.forEach(option => {
+        const text = option.textContent.toLowerCase();
+        option.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+    
+    // Template search functionality
+    document.getElementById('templateSearch').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const templates = document.querySelectorAll('#templates-list .template-item');
+      
+      templates.forEach(template => {
+        const text = template.textContent.toLowerCase();
+        template.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+    
+    document.getElementById('manageTemplateSearch').addEventListener('input', function() {
+      const query = this.value.toLowerCase();
+      const templates = document.querySelectorAll('#manage-templates-list .template-item');
+      
+      templates.forEach(template => {
+        const text = template.textContent.toLowerCase();
+        template.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+    
+    function updateSelectedItems() {
+      const selectedFoodNames = Object.keys(selectedFoodParams);
+      const selectedWorkoutNames = Object.keys(selectedWorkoutParams);
+      
+      // Update counters
+      document.getElementById('food-counter').textContent = `${selectedFoodNames.length} selected`;
+      document.getElementById('workout-counter').textContent = `${selectedWorkoutNames.length} selected`;
+      
+      // Update preview
+      const preview = document.getElementById('selectedItemsPreview');
+      const foodsPreview = document.getElementById('selectedFoodsPreview');
+      const workoutsPreview = document.getElementById('selectedWorkoutsPreview');
+      
+      if (selectedFoodNames.length > 0 || selectedWorkoutNames.length > 0) {
+        preview.style.display = 'block';
+        
+        foodsPreview.innerHTML = selectedFoodNames.length > 0 ? 
+          `<div><strong>🍎 Foods:</strong> ${selectedFoodNames.map(name => {
+            const params = selectedFoodParams[name];
+            return `<span class="selected-item-tag">${name} (${params.amount}g)</span>`;
+          }).join('')}</div>` : '';
+        
+        workoutsPreview.innerHTML = selectedWorkoutNames.length > 0 ? 
+          `<div><strong>💪 Workouts:</strong> ${selectedWorkoutNames.map(name => {
+            const params = selectedWorkoutParams[name];
+            return `<span class="selected-item-tag">${name} (${params.sets}x${params.reps} @ ${params.weight}kg)</span>`;
+          }).join('')}</div>` : '';
+      } else {
+        preview.style.display = 'none';
+      }
+    }
+    
+    // Toggle food/workout selection visibility
+    document.getElementById('includeFoods').addEventListener('change', function() {
+      document.getElementById('food-selection').style.display = this.checked ? 'block' : 'none';
+      updateSelectedItems();
+    });
+    
+    document.getElementById('includeWorkouts').addEventListener('change', function() {
+      document.getElementById('workout-selection').style.display = this.checked ? 'block' : 'none';
+      updateSelectedItems();
+    });
+    
+    // Create template form submission
+    document.getElementById('createTemplateForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('templateName').value.trim();
+      if (!name) {
+  alert('Enter template name');
+  return;
+}
+if (
+  Object.keys(selectedFoodParams).length === 0 &&
+  Object.keys(selectedWorkoutParams).length === 0
+) {
+  alert('Select at least one food or workout');
+  return;
+}
+
+      
+      const selectedFoodNames = Object.keys(selectedFoodParams);
+      const selectedWorkoutNames = Object.keys(selectedWorkoutParams);
+      
+      if (selectedFoodNames.length === 0 && selectedWorkoutNames.length === 0) {
+        alert('Please select at least one food or workout');
+        return;
+      }
+      
+      // Build template with full data
+      const templateData = {
+        name: name,
+        foods: document.getElementById('includeFoods').checked ? 
+          selectedFoodNames.map(name => selectedFoodParams[name]) : [],
+        workouts: document.getElementById('includeWorkouts').checked ? 
+          selectedWorkoutNames.map(name => selectedWorkoutParams[name]) : []
+      };
+      
+      console.log('Creating template:', templateData);
+
+      // Save template via API
+      fetch('/api/templates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(templateData)
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result && result.success) {
+          alert('Template created successfully!');
+          // Reset form
+          document.getElementById('createTemplateForm').reset();
+          selectedFoodParams = {};
+          selectedWorkoutParams = {};
+          document.getElementById('selectedItemsPreview').style.display = 'none';
+          document.getElementById('food-counter').textContent = '0 selected';
+          document.getElementById('workout-counter').textContent = '0 selected';
+
+          // Uncheck all checkboxes
+          document.querySelectorAll('#foodMultiSelect input[type="checkbox"]').forEach(cb => cb.checked = false);
+          document.querySelectorAll('#workoutMultiSelect input[type="checkbox"]').forEach(cb => cb.checked = false);
+
+          // Hide all param inputs
+          document.querySelectorAll('.param-inputs').forEach(div => div.style.display = 'none');
+
+          modal.style.display = 'none';
+          loadTemplates();
+        } else {
+          alert('Error creating template: ' + (result && result.error ? result.error : 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to save template');
+      });
+    });
+    
+    // Load templates from API
+    function loadTemplates() {
+      fetch('/api/templates')
+        .then(response => response.json())
+        .then(templates => {
+          const useList = document.getElementById('templates-list');
+          const manageList = document.getElementById('manage-templates-list');
+          
+          useList.innerHTML = '';
+          manageList.innerHTML = '';
+          
+          if (templates.length === 0) {
+            useList.innerHTML = `
+              <div class="empty-state">
+                <i class="fa fa-clipboard"></i>
+                <p>No templates found. Create your first template!</p>
+              </div>`;
+            manageList.innerHTML = `
+              <div class="empty-state">
+                <i class="fa fa-clipboard"></i>
+                <p>No templates to manage.</p>
+              </div>`;
+            return;
+          }
+          
+          templates.forEach((template, index) => {
+            const useItem = createTemplateItem(template, 'use', index);
+            const manageItem = createTemplateItem(template, 'manage', index);
+            
+            useList.appendChild(useItem);
+            manageList.appendChild(manageItem);
+          });
+        })
+        .catch(error => {
+          console.error('Error loading templates:', error);
+        });
+    }
+    
+    // Create template item element
+    function createTemplateItem(template, mode, index) {
+      const item = document.createElement('div');
+      item.className = 'template-item';
+      
+      const foodsCount = template.foods_count || 0;
+      const workoutsCount = template.workouts_count || 0;
+      const safeTemplateName = template.name.replace(/'/g, "\\'");
+      const safeId = template.name.replace(/\s+/g, '-').replace(/[^a-zA-Z0-9-]/g, '');
+      
+      item.innerHTML = `
+        <div class="template-header">
+          <div class="template-name">📋 ${template.name}</div>
+          <div class="template-stats">
+            ${foodsCount > 0 ? `<span class="stat-badge food">🍎 ${foodsCount} foods</span>` : ''}
+            ${workoutsCount > 0 ? `<span class="stat-badge workout">💪 ${workoutsCount} workouts</span>` : ''}
+          </div>
+        </div>
+        
+        <div class="template-actions">
+          ${mode === 'use' ? 
+            `<button class="btn btn-success" onclick="useTemplate('${safeTemplateName}')">
+              <i class="fa fa-play"></i> Use Template
+            </button>` :
+            `<button class="btn btn-edit" onclick="toggleEditTemplate('${safeTemplateName}')">
+              <i class="fa fa-edit"></i> Edit Template
+            </button>
+            <button class="btn btn-danger" onclick="deleteTemplate('${safeTemplateName}')">
+              <i class="fa fa-trash"></i> Delete Template
+            </button>`
+          }
+        </div>
+        <div id="edit-form-${safeId}" class="edit-form"></div>
+      `;
+      
+      return item;
+    }
+    
+    // Use template function
+    function useTemplate(templateName) {
+      if (!confirm(`Use template "${templateName}"? This will log the items to today's entries with the saved parameters.`)) {
+        return;
+      }
+      
+      fetch(`/api/templates/${encodeURIComponent(templateName)}/use`, {
+        method: 'POST'
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          alert(result.message);
+          modal.style.display = 'none';
+          window.location.href = '/';
+        } else {
+          alert('Error using template: ' + result.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error using template');
+      });
+    }
+    
+    // Delete template function
+    function deleteTemplate(templateName) {
+      if (!confirm(`Are you sure you want to delete the template "${templateName}"?`)) {
+        return;
+      }
+      
+      fetch(`/api/templates/${encodeURIComponent(templateName)}`, {
+        method: 'DELETE'
+      })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          alert('Template deleted successfully!');
+          loadTemplates();
+        } else {
+          alert('Error deleting template: ' + result.error);
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error deleting template');
+      });
+    }
+    
+    // NEW: Edit template in modal overlay
+    function toggleEditTemplate(templateName, forceClose = null) {
+      console.log('Opening edit modal for template:', templateName);
+      showEditFormModal(templateName);
+    }
+
+    function showEditFormModal(templateName) {
+      const editModal = document.getElementById('editModal');
+      const editModalBody = document.getElementById('editModalBody');
+      const editModalTitle = document.getElementById('editModalTitle');
+      
+      editModalTitle.textContent = `📋 Edit Template: ${templateName}`;
+      editModalBody.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fa fa-spinner fa-spin" style="font-size: 2em;"></i><p>Loading...</p></div>';
+      
+      editModal.classList.add('show');
+      
+      // Fetch template details, foods list, and workouts list
+      Promise.all([
+        fetch(`/api/templates/${encodeURIComponent(templateName)}/details`).then(r => r.json()),
+        fetch('/api/foods').then(r => r.json()),
+        fetch('/api/workouts').then(r => r.json())
+      ])
+      .then(([template, allFoods, allWorkouts]) => {
+        console.log('Data received:', {template, foodCount: allFoods.length, workoutCount: allWorkouts.length});
+        
+        let html = '';
+        
+        // Foods section
+        html += '<div class="form-group"><strong style="font-size: 1.1em; color: #333; display: block; margin-bottom: 15px;">🍎 Foods</strong>';
+        if (template.foods && template.foods.length > 0) {
+          template.foods.forEach((food, i) => {
+            const foodName = typeof food === 'string' ? food : food.name;
+            const amount = typeof food === 'object' ? food.amount || 100 : 100;
+            
+            html += `
+              <div class="item-editor">
+                <select class="food-select" data-food-index="${i}">
+                  <option value="">-- Select Food --</option>
+            `;
+            
+            allFoods.forEach(f => {
+              const selected = f.name === foodName ? 'selected' : '';
+              html += `<option value="${f.name}" data-full='${JSON.stringify(f).replace(/'/g, "&apos;")}' ${selected}>${f.name}</option>`;
+            });
+            
+            html += `
+                </select>
+                <input type="number" class="food-amount" placeholder="Amount (g)" value="${amount}" min="1">
+                <button class="btn-remove-item" type="button" onclick="removeFoodItem(this)">Remove</button>
+              </div>
+            `;
+          });
+        } else {
+          html += '<p style="color: #999; font-style: italic; margin: 10px 0;">No foods in this template</p>';
+        }
+        
+        html += '<button class="btn btn-secondary" type="button" onclick="addFoodToTemplateModal(document.getElementById(\'editModalBody\'))">+ Add Food</button></div>';
+        
+        // Workouts section
+        html += '<div class="form-group"><strong style="font-size: 1.1em; color: #333; display: block; margin-bottom: 15px;">💪 Workouts</strong>';
+        if (template.workouts && template.workouts.length > 0) {
+          template.workouts.forEach((workout, i) => {
+            const workoutName = typeof workout === 'string' ? workout : workout.name;
+            const sets = typeof workout === 'object' ? workout.sets || 3 : 3;
+            const reps = typeof workout === 'object' ? workout.reps || 10 : 10;
+            const weight = typeof workout === 'object' ? workout.weight || 0 : 0;
+            
+            html += `
+              <div class="item-editor">
+                <select class="workout-select" data-workout-index="${i}">
+                  <option value="">-- Select Workout --</option>
+            `;
+            
+            allWorkouts.forEach(w => {
+              const selected = w.name === workoutName ? 'selected' : '';
+              html += `<option value="${w.name}" data-full='${JSON.stringify(w).replace(/'/g, "&apos;")}' ${selected}>${w.name}</option>`;
+            });
+            
+            html += `
+                </select>
+                <input type="number" class="workout-sets" placeholder="Sets" value="${sets}" min="1">
+                <input type="number" class="workout-reps" placeholder="Reps" value="${reps}" min="1">
+                <input type="number" class="workout-weight" placeholder="Weight (kg)" value="${weight}" min="0">
+                <button class="btn-remove-item" type="button" onclick="removeWorkoutItem(this)">Remove</button>
+              </div>
+            `;
+          });
+        } else {
+          html += '<p style="color: #999; font-style: italic; margin: 10px 0;">No workouts in this template</p>';
+        }
+        
+        html += '<button class="btn btn-secondary" type="button" onclick="addWorkoutToTemplateModal(document.getElementById(\'editModalBody\'))">+ Add Workout</button></div>';
+        
+        html += `
+          <div style="display: flex; gap: 10px; margin-top: 30px;">
+            <button class="btn btn-primary" type="button" onclick="saveTemplateChanges('${templateName.replace(/'/g, "\\'")}', true)" style="width: 100%;">Save Changes</button>
+            <button class="btn" type="button" onclick="closeEditModal()" style="background: #6c757d; color: white; flex: 1;">Cancel</button>
+          </div>
+        `;
+        
+        editModalBody.innerHTML = html;
+        
+        // Store data for add/remove functions
+        editModalBody.dataset.template = JSON.stringify(template);
+        editModalBody.dataset.allFoods = JSON.stringify(allFoods);
+        editModalBody.dataset.allWorkouts = JSON.stringify(allWorkouts);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        editModalBody.innerHTML = `<div style="color: red; padding: 20px; text-align: center;"><i class="fa fa-exclamation-circle" style="font-size: 2em; margin-bottom: 10px; display: block;"></i>Error loading template: ${error.message}</div>`;
+      });
+    }
+    
+    function closeEditModal() {
+      const editModal = document.getElementById('editModal');
+      editModal.classList.remove('show');
+    }
+    
+    // Close modal when clicking outside
+    document.addEventListener('DOMContentLoaded', function() {
+      const editModal = document.getElementById('editModal');
+      editModal.addEventListener('click', function(e) {
+        if (e.target === editModal) {
+          closeEditModal();
+        }
+      });
+    });
+    
+    function addFoodToTemplateModal(modalBody) {
+      const allFoods = JSON.parse(modalBody.dataset.allFoods);
+      const formGroup = modalBody.querySelector('.form-group');
+      const addButton = formGroup.querySelector('button');
+      
+      // Remove "no foods" message if it exists
+      const noFoodsMsg = formGroup.querySelector('p');
+      if (noFoodsMsg) noFoodsMsg.remove();
+      
+      let html = `
+        <div class="item-editor">
+          <select class="food-select">
+            <option value="">-- Select Food --</option>
+      `;
+      
+      allFoods.forEach(f => {
+        html += `<option value="${f.name}" data-full='${JSON.stringify(f).replace(/'/g, "&apos;")}'>${f.name}</option>`;
+      });
+      
+      html += `
+          </select>
+          <input type="number" class="food-amount" placeholder="Amount (g)" value="100" min="1">
+          <button class="btn-remove-item" type="button" onclick="removeFoodItem(this)">Remove</button>
+        </div>
+      `;
+      
+      const newItem = document.createElement('div');
+      newItem.innerHTML = html;
+      addButton.parentElement.insertBefore(newItem.firstElementChild, addButton);
+    }
+    
+    function addWorkoutToTemplateModal(modalBody) {
+      const allWorkouts = JSON.parse(modalBody.dataset.allWorkouts);
+      const workoutFormGroup = modalBody.querySelectorAll('.form-group')[1]; // Second form-group is workouts
+      const addButton = workoutFormGroup.querySelector('button');
+      
+      // Remove "no workouts" message if it exists
+      const noWorkoutsMsg = workoutFormGroup.querySelector('p');
+      if (noWorkoutsMsg) noWorkoutsMsg.remove();
+      
+      let html = `
+        <div class="item-editor">
+          <select class="workout-select">
+            <option value="">-- Select Workout --</option>
+      `;
+      
+      allWorkouts.forEach(w => {
+        html += `<option value="${w.name}" data-full='${JSON.stringify(w).replace(/'/g, "&apos;")}'>${w.name}</option>`;
+      });
+      
+      html += `
+          </select>
+          <input type="number" class="workout-sets" placeholder="Sets" value="3" min="1">
+          <input type="number" class="workout-reps" placeholder="Reps" value="10" min="1">
+          <input type="number" class="workout-weight" placeholder="Weight (kg)" value="0" min="0">
+          <button class="btn-remove-item" type="button" onclick="removeWorkoutItem(this)">Remove</button>
+        </div>
+      `;
+      
+      const newItem = document.createElement('div');
+      newItem.innerHTML = html;
+      addButton.parentElement.insertBefore(newItem.firstElementChild, addButton);
+    }
+
+    function removeFoodItem(button) {
+      const item = button.parentElement;
+      if (confirm('Remove this food from the template?')) {
+        item.remove();
+      }
+    }
+
+    function removeWorkoutItem(button) {
+      const item = button.parentElement;
+      if (confirm('Remove this workout from the template?')) {
+        item.remove();
+      }
+    }
+
+    function saveTemplateChanges(templateName, fromModal = false) {
+      const editContainer = fromModal ? document.getElementById('editModalBody') : null;
+      
+      if (!fromModal) {
+        alert('Error: Invalid save method');
+        return;
+      }
+      
+      // Collect foods from dropdowns and amounts
+      const updatedFoods = [];
+      editContainer.querySelectorAll('.food-select').forEach(select => {
+        const foodName = select.value;
+        const amount = parseInt(select.parentElement.querySelector('.food-amount').value) || 100;
+        
+        if (foodName) {
+          const foodData = select.options[select.selectedIndex].dataset.full;
+          const foodObj = foodData ? JSON.parse(foodData.replace(/&apos;/g, "'")) : {name: foodName};
+          foodObj.amount = amount;
+          updatedFoods.push(foodObj);
+        }
+      });
+      
+      // Collect workouts from dropdowns and values
+      const updatedWorkouts = [];
+      editContainer.querySelectorAll('.workout-select').forEach(select => {
+        const workoutName = select.value;
+        const item = select.parentElement;
+        const sets = parseInt(item.querySelector('.workout-sets').value) || 3;
+        const reps = parseInt(item.querySelector('.workout-reps').value) || 10;
+        const weight = parseInt(item.querySelector('.workout-weight').value) || 0;
+        
+        if (workoutName) {
+          const workoutData = select.options[select.selectedIndex].dataset.full;
+          const workoutObj = workoutData ? JSON.parse(workoutData.replace(/&apos;/g, "'")) : {name: workoutName};
+          workoutObj.sets = sets;
+          workoutObj.reps = reps;
+          workoutObj.weight = weight;
+          updatedWorkouts.push(workoutObj);
+        }
+      });
+
+      console.log('Saving template:', templateName);
+      console.log('Foods:', updatedFoods);
+      console.log('Workouts:', updatedWorkouts);
+
+      // Send update to server
+      fetch(`/api/templates/${encodeURIComponent(templateName)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          foods: updatedFoods,
+          workouts: updatedWorkouts
+        })
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(result => {
+        console.log('Server response:', result);
+        if (result.success) {
+          alert('Template updated successfully!');
+          loadTemplates();
+          closeEditModal();
+        } else {
+          alert('Error updating template: ' + (result.error || 'Unknown error'));
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Error saving template changes: ' + error.message);
+      });
+    }
+    
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      loadTemplates();
+      
+      // Handle edit modal close button and outside click
+      const editModal = document.getElementById('editModal');
+      if (editModal) {
+        editModal.addEventListener('click', function(e) {
+          if (e.target === editModal) {
+            closeEditModal();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>

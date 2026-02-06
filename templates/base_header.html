@@ -1,0 +1,111 @@
+<!-- File: templates/base_header.html -->
+<nav class="nav">
+  <div class="nav-container">
+    <a href="{{ url_for('home') }}" class="nav-logo">LifeTrack</a>
+    <div class="nav-links">
+      <a href="{{ url_for('home') }}" class="nav-btn">Home</a>
+      <a href="{{ url_for('log') }}" class="nav-btn">Log</a>
+      <a href="{{ url_for('user_profile.profile') }}" class="nav-btn">Profile</a>
+      {% if (is_admin is defined and ((is_admin is callable and is_admin()) or (is_admin is not callable and is_admin))) %}
+        <a href="{{ url_for('admin.admin_dashboard') }}" class="nav-btn admin-btn">Admin</a>
+      {% endif %}
+      <a href="{{ url_for('auth.logout') }}" class="nav-btn logout-btn">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<style>
+  .nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 15px 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  
+  .nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+  }
+  
+  .nav-logo {
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #667eea;
+    text-decoration: none;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .nav-links {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  
+  .nav-btn {
+    color: #333;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+  }
+  
+  .nav-btn:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #667eea;
+    transform: translateY(-2px);
+  }
+  
+  .admin-btn {
+    background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+    color: white !important;
+  }
+  
+  .admin-btn:hover {
+    background: linear-gradient(135deg, #ee5a24, #ff6b6b);
+    transform: translateY(-2px);
+  }
+  
+  .logout-btn {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white !important;
+  }
+  
+  .logout-btn:hover {
+    background: linear-gradient(135deg, #764ba2, #667eea);
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    .nav-links {
+      gap: 10px;
+    }
+    
+    .nav-btn {
+      padding: 6px 12px;
+      font-size: 0.9em;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .nav-container {
+      flex-direction: column;
+      gap: 15px;
+    }
+    
+    .nav-links {
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+</style>

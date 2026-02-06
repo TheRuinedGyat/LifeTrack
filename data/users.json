@@ -1,0 +1,81 @@
+[
+  {
+    "username": "vabalubadubdub",
+    "password": "scrypt:32768:8:1$LSor5o7xaxJtZFW4$b5bbd58991e744941d63ef9b1ae00f66e1b932a7f1c668c97215964fa62a3ff04a54123b1263d26533e45b657d2f244bcbc76ea7360ae7e20ce8468caae07c2b",
+    "role": "admin",
+    "suspended_until": null,
+    "profile": {
+      "height": 180,
+      "weight": 84,
+      "goal": "gain",
+      "calorie_goal": 2400,
+      "age": 19,
+      "birthday": "2006-10-20",
+      "protein_goal": 168,
+      "carb_goal": 282,
+      "fat_goal": 67
+    }
+  },
+  {
+    "username": "system",
+    "password": "scrypt:32768:8:1$vLxBSq5OACV77Mp3$f63f834f9d377499f52c5c3edbf8399f1998e4869a65816a1f72e0626d69cbfd8712b30190443824d99a6ebb8274349fabd170aeb9d858e1296c0569c3698c33",
+    "role": "admin",
+    "suspended_until": null,
+    "profile": {
+      "height": 173,
+      "weight": 85,
+      "goal": "maintain",
+      "calorie_goal": 3553,
+      "age": 18,
+      "gender": "male",
+      "activity_level": "1.9",
+      "protein_goal": 266,
+      "carb_goal": 355,
+      "fat_goal": 118,
+      "tdee": 2694.0,
+      "bmr": 1796.0,
+      "birthday": "2006-10-20"
+    }
+  },
+  {
+    "username": "gochasamsonadze",
+    "password": "scrypt:32768:8:1$ADsM3WYCCN9i4lLo$b1e73378390b00748ee66513bf67f9591daab012a55cf0c5c4f3315d0681a7bd38db56ea2fa35e5316da32a21b310edd2319f0179773b04bbed6ea02c0732243",
+    "role": "user",
+    "suspended_until": null,
+    "profile": {
+      "height": 170.0,
+      "weight": 70.0,
+      "goal": "maintain",
+      "calorie_goal": 2516,
+      "age": 18,
+      "gender": "male",
+      "activity_level": 1.5,
+      "protein_goal": 126,
+      "carb_goal": 361,
+      "fat_goal": 63,
+      "tdee": 2516.0,
+      "bmr": 1678.0
+    }
+  },
+  {
+    "username": "randomuser",
+    "password": "scrypt:32768:8:1$v2NH1IiDfnHAVHZX$5abd3b5ae6063095029f28241aa59b9e722dbf5cc3d145c9ea36049e8284eda7c378f8f3c5733b42b2dca810341c00177868664aaf116d3ee40f6480adc2443e",
+    "role": "user",
+    "suspended_until": null,
+    "profile": {
+      "height": 175.0,
+      "weight": 80.0,
+      "goal": "maintain",
+      "calorie_goal": 2713,
+      "age": 18,
+      "gender": "male",
+      "activity_level": 1.5,
+      "protein_goal": 126,
+      "carb_goal": 319,
+      "fat_goal": 63,
+      "tdee": 2713.0,
+      "bmr": 1809.0
+    }
+  }
+  
+]

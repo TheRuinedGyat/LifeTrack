@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Profile</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+        
+        .container { 
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            margin: 40px auto;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1), 0 10px 20px rgba(0,0,0,0.05);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        h2 {
+            color: #667eea;
+            font-size: 2.2em;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        label { 
+            display: block;
+            margin-top: 20px;
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+        
+        input, select { 
+            width: 100%;
+            padding: 15px;
+            margin-top: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .btn { 
+            margin-top: 30px;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .recommendation-note { 
+            font-size: 0.9em;
+            color: #667eea;
+            margin-top: 5px;
+            font-weight: 500;
+            padding: 8px 12px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .form-group {
+            margin-bottom: 5px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 20px;
+                padding: 30px 20px;
+                max-width: none;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            h2 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body class="green-bg">
+    {% include 'base_header.html' %}
+    <div class="container">
+        <h2>👤 Profile</h2>
+        <form method="post">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="height">Height (cm):</label>
+                    <input type="number" name="height" id="height" value="{{ user.profile.height or '' }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">Weight (kg):</label>
+                    <input type="number" name="weight" id="weight" value="{{ user.profile.weight or '' }}" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="activity_level">Activity Level:</label>
+                <select name="activity_level" id="activity_level" required>
+                    <option value="1.2" {% if user.profile.activity_level == '1.2' %}selected{% endif %}>Sedentary (little/no exercise)</option>
+                    <option value="1.375" {% if user.profile.activity_level == '1.375' %}selected{% endif %}>Light activity (1-3 days/week)</option>
+                    <option value="1.5" {% if user.profile.activity_level == '1.5' or not user.profile.activity_level %}selected{% endif %}>Moderate activity (3-5 days/week)</option>
+                    <option value="1.725" {% if user.profile.activity_level == '1.725' %}selected{% endif %}>Very active (6-7 days/week)</option>
+                    <option value="1.9" {% if user.profile.activity_level == '1.9' %}selected{% endif %}>Extremely active (very hard exercise)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="goal">Goal:</label>
+                <select name="goal" id="goal" required>
+                    <option value="lose" {% if user.profile.goal == 'lose' %}selected{% endif %}>Lose Weight</option>
+                    <option value="maintain" {% if user.profile.goal == 'maintain' %}selected{% endif %}>Maintain Weight</option>
+                    <option value="gain" {% if user.profile.goal == 'gain' %}selected{% endif %}>Gain Weight</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="calorie_goal">Calorie Goal:</label>
+                <input type="number" name="calorie_goal" id="calorie_goal" value="{{ user.profile.calorie_goal or '' }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="protein_goal">Protein Goal (g):</label>
+                <input type="number" name="protein_goal" id="protein_goal" value="{{ user.profile.protein_goal or recommended_macros.protein }}" required>
+                <div class="recommendation-note" id="protein-note">💡 Recommended: <span id="protein-rec">0</span>g</div>
+            </div>
+
+            <div class="form-group">
+                <label for="carb_goal">Carb Goal (g):</label>
+                <input type="number" name="carb_goal" id="carb_goal" value="{{ user.profile.carb_goal or recommended_macros.carbs }}" required>
+                <div class="recommendation-note" id="carb-note">💡 Recommended: <span id="carb-rec">0</span>g</div>
+            </div>
+
+            <div class="form-group">
+                <label for="fat_goal">Fat Goal (g):</label>
+                <input type="number" name="fat_goal" id="fat_goal" value="{{ user.profile.fat_goal or recommended_macros.fat }}" required>
+                <div class="recommendation-note" id="fat-note">💡 Recommended: <span id="fat-rec">0</span>g</div>
+            </div>
+
+            <div class="form-group">
+                <label for="birthday">Birthday:</label>
+                <input type="date" name="birthday" id="birthday" value="{{ user.profile.birthday or '' }}" required>
+            </div>
+
+            <button class="btn" type="submit">Update Profile</button>
+        </form>
+    </div>
+
+<script>
+function calculateMacros() {
+    const goal = document.getElementById('goal').value;
+    const weight = parseFloat(document.getElementById('weight').value) || 70;
+    const activityLevel = parseFloat(document.getElementById('activity_level').value) || 1.5;
+    
+    // Calculate BMR (simplified Mifflin-St Jeor without age/height for quick calc)
+    const baseBMR = weight * 22; // Approximate BMR
+    const tdee = baseBMR * activityLevel;
+    
+    let targetCalories, proteinPercent, carbPercent, fatPercent;
+    
+    // Use your recommended macro ratios based on goal
+    if (goal === 'lose') {
+        targetCalories = Math.round(tdee * 0.85); // 15% calorie deficit
+        proteinPercent = 0.40; // 40% protein
+        carbPercent = 0.30;    // 30% carbs
+        fatPercent = 0.30;     // 30% fat
+    } else if (goal === 'gain') {
+        targetCalories = Math.round(tdee * 1.10); // 10% calorie surplus
+        proteinPercent = 0.30; // 30% protein
+        carbPercent = 0.50;    // 50% carbs
+        fatPercent = 0.20;     // 20% fat
+    } else { // maintain
+        targetCalories = Math.round(tdee);
+        proteinPercent = 0.30; // 30% protein
+        carbPercent = 0.40;    // 40% carbs
+        fatPercent = 0.30;     // 30% fat
+    }
+    
+    // Calculate macros in grams
+    // Protein: 4 calories per gram
+    // Carbs: 4 calories per gram
+    // Fat: 9 calories per gram
+    const proteinGrams = Math.round((targetCalories * proteinPercent) / 4);
+    const carbGrams = Math.round((targetCalories * carbPercent) / 4);
+    const fatGrams = Math.round((targetCalories * fatPercent) / 9);
+    
+    return {
+        calories: targetCalories,
+        protein: proteinGrams,
+        carbs: carbGrams,
+        fat: fatGrams
+    };
+}
+
+function updateGoals() {
+    const macros = calculateMacros();
+    
+    // Update input fields
+    document.getElementById('calorie_goal').value = macros.calories;
+    document.getElementById('protein_goal').value = macros.protein;
+    document.getElementById('carb_goal').value = macros.carbs;
+    document.getElementById('fat_goal').value = macros.fat;
+    
+    // Update recommendation notes
+    document.getElementById('protein-rec').textContent = macros.protein;
+    document.getElementById('carb-rec').textContent = macros.carbs;
+    document.getElementById('fat-rec').textContent = macros.fat;
+}
+
+// Trigger on goal, weight, AND activity level change
+document.getElementById('goal').addEventListener('change', updateGoals);
+document.getElementById('weight').addEventListener('input', updateGoals);
+document.getElementById('activity_level').addEventListener('change', updateGoals);
+
+// Initial calculation on page load
+updateGoals();
+</script>
+</body>
+</html>

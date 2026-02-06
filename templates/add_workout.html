@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Add Workout</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <style>
+    /* Page background image */
+    body {
+      background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+    .add-form { max-width: 400px; margin: 40px auto; background: #f7f7f7; padding: 24px; border-radius: 8px; }
+    .add-form label { margin-top: 12px; font-weight: 500; }
+    .add-form input, .add-form select { margin-top: 4px; margin-bottom: 12px; width: 100%; padding: 6px; border-radius: 4px; border: 1px solid #bdbdbd; }
+    .add-form button { margin-top: 10px; }
+    .chip-group { margin-bottom: 10px; }
+    .chip {
+      display: inline-block;
+      padding: 5px 14px;
+      margin: 2px 4px;
+      border-radius: 16px;
+      background: #f0f0f0;
+      color: #333;
+      cursor: pointer;
+      font-size: 0.95em;
+      border: 1px solid #bdbdbd;
+      transition: background 0.2s, color 0.2s;
+    }
+    .chip.active, .chip:hover { background: #4287f5; color: #fff; }
+  </style>
+</head>
+<body>
+  {% include 'base_header.html' %}
+  <div class="add-form">
+    <h2>Add New Workout</h2>
+    <form method="post">
+      <label for="name">Workout Name:</label>
+      <input type="text" name="name" id="name" required placeholder="e.g. Bulgarian Split Squat">
+
+      <label>Muscle Groups:</label>
+      <div class="chip-group" id="muscle-chips">
+        {% set all_muscles = [
+          'chest', 'back', 'arms', 'shoulders', 'legs', 'glutes', 'abs', 'core', 'cardio', 'full-body'
+        ] %}
+        {% for muscle in all_muscles %}
+          <span class="chip" onclick="toggleChip(this)">{{ muscle|capitalize }}</span>
+        {% endfor %}
+      </div>
+      <input type="hidden" name="categories" id="categories">
+
+      <label for="public">Visibility:</label>
+      <select name="public" id="public">
+        <option value="true">Public</option>
+        <option value="false">Private</option>
+      </select>
+
+      <button type="submit">Add Workout</button>
+      <a href="{{ url_for('log') }}" class="mini-btn" style="background:#888;">Cancel</a>
+    </form>
+  </div>
+  <script>
+    function toggleChip(chip) {
+      chip.classList.toggle('active');
+      updateCategories();
+    }
+    function updateCategories() {
+      const chips = document.querySelectorAll('.chip-group .chip.active');
+      const selected = Array.from(chips).map(c => c.textContent.trim().toLowerCase());
+      document.getElementById('categories').value = JSON.stringify(selected);
+    }
+    // Ensure categories are set on submit
+    document.querySelector('form').addEventListener('submit', function(e) {
+      updateCategories();
+    });
+  </script>
+</body>
+</html>

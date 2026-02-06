@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Log Workout</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Add this at the very beginning of the <style> section */
+    body {
+      background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+    }
+    
+    /* Hide duplicate delete section that was causing conflicts */
+    .workout-delete-actions { display: none; }
+    
+    /* Style for each workout option row */
+    .multi-select-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f8f9fa;
+      transition: background-color 0.2s ease;
+    }
+    .multi-select-option:hover { background: #f8f9fa; }
+    .multi-select-left { flex: 1; }
+    .multi-select-actions { margin-left: 10px; }
+    
+    /* Delete button styling with gradient and hover effects */
+    .delete-btn {
+      background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 12px;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: 0 2px 4px rgba(220, 53, 69, 0.2);
+    }
+    .delete-btn:hover {
+      background: linear-gradient(135deg, #c82333 0%, #a71e2a 100%);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    }
+    
+    /* Visual feedback when deleting (grayed out, disabled) */
+    .multi-select-option[data-deleting="true"] {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+    .multi-select-option[data-deleting="true"] .delete-btn {
+      background: #6c757d;
+      cursor: not-allowed;
+    }
+    
+    /* Main submit button styling */
+    #submit-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    #submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+    #submit-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* Flash message styling */
+    .flash-messages {
+      margin-bottom: 20px;
+    }
+    
+    .flash-message {
+      padding: 12px 16px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .flash-message.success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+    
+    .flash-message.error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+    
+    .flash-message.info {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #b8daff;
+    }
+  </style>
+</head>
+<body>
+  {% include 'base_header.html' %}
+  <div class="container">
+    <h2>🏋️‍♂️ Log Workout</h2>
+    
+    <!-- Flash Messages from Server -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-messages">
+          {% for category, message in messages %}
+            <div class="flash-message {{ category }}">
+              {{ message }}
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    
+    <!-- Client-side validation message -->
+    <div id="validation-message" class="alert" style="display:none; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;"></div>
+    
+    <form method="post" id="workout-form">
+      <!-- Filter buttons for muscle groups -->
+      <div class="chip-group" id="muscle-chips">
+        <span class="chip active" onclick="filterMuscle('all', this)">🎯 All</span>
+        <!-- Generate muscle group chips from workout data -->
+        {% set all_muscles = [] %}
+        {% for w in workouts %}
+          {% for cat in w.categories %}
+            {% if cat not in all_muscles %}
+              {% set _ = all_muscles.append(cat) %}
+            {% endif %}
+          {% endfor %}
+        {% endfor %}
+        <!-- Create a chip for each muscle group with appropriate emoji -->
+        {% for muscle in all_muscles %}
+          <span class="chip" onclick="filterMuscle('{{ muscle }}', this)">
+            {% if muscle == 'chest' %}💪
+            {% elif muscle == 'back' %}🏃‍♂️
+            {% elif muscle == 'shoulders' %}🤸‍♂️
+            {% elif muscle == 'arms' %}💪
+            {% elif muscle == 'legs' %}🦵
+            {% elif muscle == 'core' %}🔥
+            {% elif muscle == 'cardio' %}❤️
+            {% else %}⚡
+            {% endif %}
+            {{ muscle|capitalize }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <!-- Search input to filter workouts -->
+      <label for="workoutMulti"><b>🔍 Workouts:</b></label>
+      <input type="text" id="workoutSearch" class="search-input" placeholder="Search workouts..." onkeyup="filterWorkoutCheckboxes()">
+
+      <!-- List of all available workouts with checkboxes -->
+      <div id="workoutMulti" class="multi-select-list">
+        {% for w in workouts %}
+        <div class="multi-select-option" data-muscles="{{ w.categories|join(',') }}">
+          <div class="multi-select-left">
+            <label class="multi-label">
+              <input type="checkbox" name="workouts" value="{{ w.name }}" id="workout_{{ loop.index }}" onchange="updateWorkoutInputs()">
+              {{ w.name }}
+            </label>
+          </div>
+          <!-- Show delete button only if user is admin or created this workout -->
+          {% if is_admin or w.creator == user.username %}
+          <div class="multi-select-actions">
+            <button type="button" class="delete-btn" title="Delete workout" onclick="deleteWorkout('{{ w.name }}', this)">
+              🗑️
+            </button>
+          </div>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Dynamic input fields for selected workouts (sets, reps, weight, etc.) -->
+      <div id="selectedWorkouts"></div>
+
+      <!-- Link to add new workout -->
+      <a class="green-btn" href="{{ url_for('workout.add_workout') }}">
+        ➕ Add Workout
+      </a>
+
+      <!-- Main submit button -->
+      <button type="submit" id="submit-btn">
+        <span id="submit-text">
+          <i class="fa-solid fa-dumbbell"></i> 📝 Log Workout(s)
+        </span>
+        <span id="submit-loading" style="display:none;">
+          <i class="fa fa-spinner fa-spin"></i> 📊 Logging...
+        </span>
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // Global variables
+    let isSubmitting = false;
+    let debugLog = [];
+
+    // **MISSING FUNCTION:** Add debug messages to the debug panel
+    function addDebugLog(message) {
+        debugLog.push(new Date().toLocaleTimeString() + ': ' + message);
+        const debugPanel = document.getElementById('debug-info');
+        if (debugPanel) {
+            debugPanel.innerHTML = debugLog.slice(-10).join('<br>');
+        }
+        console.log(message);
+    }
+
+    // Show success or error messages to user
+    function showValidationMessage(message, type = 'error') {
+        const msgDiv = document.getElementById('validation-message');
+        msgDiv.textContent = message;
+        msgDiv.style.display = 'block';
+        
+        // Style message based on type (error = red, success = green)
+        if (type === 'error') {
+            msgDiv.style.background = '#f8d7da';
+            msgDiv.style.color = '#721c24';
+            msgDiv.style.border = '1px solid #f5c6cb';
+        } else {
+            msgDiv.style.background = '#d4edda';
+            msgDiv.style.color = '#155724';
+            msgDiv.style.border = '1px solid #c3e6cb';
+        }
+        
+        // Auto-hide message after 5 seconds
+        setTimeout(() => { msgDiv.style.display = 'none'; }, 5000);
+    }
+
+    // Filter workouts by muscle group when chip is clicked
+    function filterMuscle(muscle, chip) {
+        // Update active chip styling
+        document.querySelectorAll('#muscle-chips .chip').forEach(c => c.classList.remove('active'));
+        chip.classList.add('active');
+        
+        // Show/hide workout options based on muscle group
+        const options = document.querySelectorAll('#workoutMulti .multi-select-option');
+        options.forEach(option => {
+            const shouldShow = muscle === 'all' || option.dataset.muscles.includes(muscle);
+            option.style.display = shouldShow ? '' : 'none';
+            
+            // Uncheck hidden workouts
+            if (!shouldShow) {
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = false;
+            }
+        });
+        updateWorkoutInputs();
+    }
+
+    // Filter workouts by search text
+    function filterWorkoutCheckboxes() {
+        const search = document.getElementById('workoutSearch').value.toLowerCase();
+        
+        document.querySelectorAll('#workoutMulti .multi-select-option').forEach(option => {
+            const shouldShow = option.textContent.toLowerCase().includes(search);
+            option.style.display = shouldShow ? '' : 'none';
+        });
+    }
+
+    // **FIXED:** Create input fields for selected workouts (sets, reps, weight, etc.)
+    function updateWorkoutInputs() {
+        const checked = document.querySelectorAll('#workoutMulti input[type="checkbox"]:checked');
+        const container = document.getElementById('selectedWorkouts');
+        container.innerHTML = '';
+        
+        // Create input section for each selected workout
+        checked.forEach(cb => {
+            const name = cb.value;
+            const entry = document.createElement('div');
+            entry.className = 'workout-entry';
+            entry.style.cssText = 'background: rgba(255, 255, 255, 0.1); padding: 15px; margin: 10px 0; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2);';
+            entry.innerHTML = `
+                <strong style="color: #667eea; font-size: 16px; display: block; margin-bottom: 8px;">🏋️ ${name}</strong>
+                <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top: 10px;">
+                    <label>📊 Sets: <input type="number" name="sets_${name}" min="0" style="width:60px;"></label>
+                    <label>🔄 Reps: <input type="number" name="reps_${name}" min="0" style="width:60px;"></label>
+                    <label>⚖️ Weight (kg): <input type="number" name="weight_${name}" min="0" step="0.1" style="width:70px;"></label>
+                    <label>⏱️ Duration (min): <input type="number" name="duration_${name}" min="0" step="0.1" style="width:70px;"></label>
+                    <label>🚀 Speed (km/h): <input type="number" name="speed_${name}" min="0" step="0.1" style="width:70px;"></label>
+                </div>
+            `;
+            container.appendChild(entry);
+        });
+        
+        // Hide validation message when workouts are selected
+        if (checked.length > 0) {
+            document.getElementById('validation-message').style.display = 'none';
+        }
+    }
+
+    // Delete workout with server request and UI feedback
+    function deleteWorkout(name, btn) {
+        if (!confirm(`🗑️ Are you sure you want to delete "${name}"?`)) return;
+        
+        // Show loading state
+        const option = btn.closest('.multi-select-option');
+        option.setAttribute('data-deleting', 'true');
+        btn.innerHTML = '<i class="fa fa-spinner fa-spin"></i>';
+        
+        // Send delete request to server
+        fetch('{{ url_for("workout.delete_workout", name="__NAME__") }}'.replace('__NAME__', encodeURIComponent(name)), {
+            method: 'POST',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': document.querySelector('input[name="csrf_token"]')?.value || ''
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                showValidationMessage(`✅ Workout "${name}" deleted successfully!`, 'success');
+                
+                // Remove workout with smooth animation
+                option.style.transition = 'all 0.3s ease';
+                option.style.opacity = '0';
+                option.style.transform = 'translateX(-20px)';
+                
+                setTimeout(() => {
+                    option.remove();
+                    updateWorkoutInputs();
+                }, 300);
+            } else {
+                throw new Error('Delete failed');
+            }
+        })
+        .catch(error => {
+            showValidationMessage('❌ Failed to delete workout. Please try again.', 'error');
+            
+            // Reset button state on error
+            option.removeAttribute('data-deleting');
+            btn.innerHTML = '🗑️';
+        });
+    }
+
+    // Handle form submission with validation
+    document.getElementById('workout-form').addEventListener('submit', function(e) {
+        // Prevent double submission
+        if (isSubmitting) {
+            e.preventDefault();
+            return false;
+        }
+        
+        // Check if any workouts are selected
+        const checked = document.querySelectorAll('#workoutMulti input[type="checkbox"]:checked');
+        
+        if (checked.length === 0) {
+            e.preventDefault();
+            showValidationMessage('❌ Please select at least one workout.');
+            return false;
+        }
+        
+        // Check if any workout data is entered
+        let hasAnyData = false;
+        checked.forEach(cb => {
+            const name = cb.value;
+            const inputs = document.querySelectorAll(`input[name^="sets_${name}"], input[name^="reps_${name}"], input[name^="weight_${name}"], input[name^="duration_${name}"], input[name^="speed_${name}"]`);
+            
+            inputs.forEach(input => {
+                if (input.value && parseFloat(input.value) > 0) {
+                    hasAnyData = true;
+                }
+            });
+        });
+        
+        if (!hasAnyData) {
+            e.preventDefault();
+            showValidationMessage('❌ Please enter at least one value for your selected workouts.');
+            return false;
+        }
+        
+        // Show loading state
+        isSubmitting = true;
+        document.getElementById('submit-text').style.display = 'none';
+        document.getElementById('submit-loading').style.display = 'inline';
+        document.getElementById('submit-btn').disabled = true;
+        
+        // Remove the client-side success message - let server handle it
+        return true;
+    });
+    
+    // Initialize page
+    updateWorkoutInputs();
+
+    // Auto-hide flash messages after 5 seconds
+    document.addEventListener('DOMContentLoaded', function() {
+      const flashMessages = document.querySelectorAll('.flash-message');
+      flashMessages.forEach(message => {
+        setTimeout(() => {
+          message.style.transition = 'opacity 0.5s ease';
+          message.style.opacity = '0';
+          setTimeout(() => {
+            message.remove();
+          }, 500);
+        }, 5000);
+      });
+    });
+  </script>
+</body>
+</html>

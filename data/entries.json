@@ -1,0 +1,159 @@
+[
+  {
+    "user": "randomuser",
+    "date": "2025-07-09",
+    "foods": [
+      {
+        "name": "Chicken Breast",
+        "calories": 165,
+        "protein": 31,
+        "carbs": 0,
+        "fat": 3.6,
+        "categories": [
+          "high-protein",
+          "bulking"
+        ],
+        "public": true,
+        "creator": "system",
+        "pending_approval": false,
+        "amount": 35.0
+      }
+    ],
+    "workouts": [],
+    "privacy": "Private"
+  },
+  {
+    "user": "system",
+    "date": "2026-02-05",
+    "foods": [
+      {
+        "name": "Brown Rice",
+        "calories": 111,
+        "protein": 2.6,
+        "carbs": 23,
+        "fat": 0.9,
+        "categories": [
+          "bulking"
+        ],
+        "public": true,
+        "creator": "system",
+        "pending_approval": false,
+        "amount": 390.0
+      }
+    ],
+    "workouts": [],
+    "privacy": "Private"
+  },
+  {
+    "user": "system",
+    "date": "2026-02-05",
+    "foods": [
+      {
+        "calories": 165,
+        "carbs": 0,
+        "categories": [
+          "high-protein",
+          "bulking"
+        ],
+        "creator": "system",
+        "fat": 3.6,
+        "name": "Chicken Breast",
+        "pending_approval": false,
+        "protein": 31,
+        "public": true,
+        "amount": 150
+      },
+      {
+        "calories": 35,
+        "carbs": 7,
+        "categories": [
+          "cutting"
+        ],
+        "creator": "system",
+        "fat": 0.3,
+        "name": "Rice Cake",
+        "pending_approval": false,
+        "protein": 0.7,
+        "public": true,
+        "amount": 100
+      }
+    ],
+    "workouts": [],
+    "privacy": "Private"
+  },
+  {
+    "user": "system",
+    "date": "2026-02-05",
+    "foods": [],
+    "workouts": [
+      {
+        "categories": [
+          "arms"
+        ],
+        "creator": "system",
+        "name": "Bicep Curl",
+        "public": true,
+        "sets": 3,
+        "reps": 12,
+        "weight": 15
+      }
+    ],
+    "privacy": "Private"
+  },
+  {
+    "user": "system",
+    "date": "2026-02-06",
+    "foods": [
+      {
+        "calories": 35,
+        "carbs": 7,
+        "categories": [
+          "cutting"
+        ],
+        "creator": "system",
+        "fat": 0.3,
+        "name": "Rice Cake",
+        "pending_approval": false,
+        "protein": 0.7,
+        "public": true,
+        "amount": 100
+      },
+      {
+        "calories": 165,
+        "carbs": 0,
+        "categories": [
+          "high-protein",
+          "bulking"
+        ],
+        "creator": "system",
+        "fat": 3.6,
+        "name": "Chicken Breast",
+        "pending_approval": false,
+        "protein": 31,
+        "public": true,
+        "amount": 150
+      }
+    ],
+    "workouts": [],
+    "privacy": "Private"
+  },
+  {
+    "user": "system",
+    "date": "2026-02-06",
+    "foods": [],
+    "workouts": [
+      {
+        "categories": [
+          "arms"
+        ],
+        "creator": "system",
+        "name": "Bicep Curl",
+        "public": true,
+        "sets": 3,
+        "reps": 12,
+        "weight": 15
+      }
+    ],
+    "privacy": "Private"
+  }
+]

@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up - LifeTrack</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      /* Try multiple background fallbacks */
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      background-image: url('{{ url_for("static", filename="image/background.jpg") }}');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    /* Fallback for missing background image */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+      z-index: -1;
+    }
+    
+    .form-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 450px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .form-card h2 {
+      color: #333;
+      margin-bottom: 30px;
+      font-size: 2em;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .form-card input {
+      width: 100%;
+      padding: 15px;
+      margin-bottom: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+      box-sizing: border-box;
+    }
+    
+    .form-card input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+    
+    .form-card input.valid {
+      border-color: #4caf50;
+    }
+    
+    .form-card input.invalid {
+      border-color: #f44336;
+    }
+    
+    .form-card button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: transform 0.3s, box-shadow 0.3s;
+      margin-bottom: 20px;
+      margin-top: 10px;
+    }
+    
+    .form-card button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+    
+    .form-card button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    
+    .form-card p {
+      color: #666;
+      margin: 0;
+    }
+    
+    .form-card a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: bold;
+      transition: color 0.3s;
+    }
+    
+    .form-card a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+    
+    .alert {
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      border: 1px solid;
+    }
+    
+    .alert.error {
+      background-color: #fee;
+      color: #c33;
+      border-color: #fcc;
+    }
+    
+    .alert.success {
+      background-color: #efe;
+      color: #3c3;
+      border-color: #cfc;
+    }
+    
+    .alert.info {
+      background-color: #eef;
+      color: #33c;
+      border-color: #ccf;
+    }
+    
+    .password-requirements {
+      text-align: left;
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      color: #666;
+    }
+    
+    .password-requirements h4 {
+      margin: 0 0 10px 0;
+      color: #333;
+    }
+    
+    .password-requirements ul {
+      margin: 0;
+      padding-left: 20px;
+    }
+    
+    .password-requirements li {
+      margin-bottom: 5px;
+    }
+    
+    .requirement {
+      transition: color 0.3s;
+    }
+    
+    .requirement.met {
+      color: #4caf50;
+      font-weight: bold;
+    }
+    
+    .validation-message {
+      font-size: 12px;
+      margin-top: -10px;
+      margin-bottom: 15px;
+      text-align: left;
+      padding-left: 5px;
+    }
+    
+    .validation-message.error {
+      color: #f44336;
+    }
+    
+    .validation-message.success {
+      color: #4caf50;
+    }
+    
+    @media (max-width: 480px) {
+      .form-card {
+        margin: 20px;
+        padding: 30px 20px;
+      }
+      
+      body {
+        background-attachment: scroll;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-card">
+    <h2>📝 Join LifeTrack</h2>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert {{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <div class="password-requirements">
+      <h4>Account Requirements:</h4>
+      <ul>
+        <li class="requirement" id="req-length">Username: 3+ characters</li>
+        <li class="requirement" id="req-pass-length">Password: 8+ characters</li>
+        <li class="requirement" id="req-number">Contains at least one number</li>
+        <li class="requirement" id="req-match">Passwords match</li>
+      </ul>
+    </div>
+
+    <form method="post" action="{{ url_for('auth.signup') }}" id="signupForm">
+      <input name="username" type="text" placeholder="Choose a username" required autocomplete="username" id="username">
+      <div class="validation-message" id="username-message"></div>
+      
+      <input name="password" type="password" placeholder="Create a password" required autocomplete="new-password" id="password">
+      <div class="validation-message" id="password-message"></div>
+      
+      <input name="repeat_password" type="password" placeholder="Confirm your password" required autocomplete="new-password" id="repeat_password">
+      <div class="validation-message" id="repeat-message"></div>
+      
+      <button type="submit" id="submitBtn">Create Account</button>
+    </form>
+    
+    <p>Already have an account? <a href="{{ url_for('auth.login') }}">Sign in here</a></p>
+  </div>
+
+  <script>
+    // Real-time validation
+    const username = document.getElementById('username');
+    const password = document.getElementById('password');
+    const repeatPassword = document.getElementById('repeat_password');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    function validateUsername() {
+      const value = username.value.trim();
+      const message = document.getElementById('username-message');
+      const requirement = document.getElementById('req-length');
+      
+      if (value.length >= 3) {
+        username.classList.remove('invalid');
+        username.classList.add('valid');
+        message.textContent = '✓ Username looks good';
+        message.className = 'validation-message success';
+        requirement.classList.add('met');
+        return true;
+      } else {
+        username.classList.remove('valid');
+        username.classList.add('invalid');
+        message.textContent = 'Username must be at least 3 characters';
+        message.className = 'validation-message error';
+        requirement.classList.remove('met');
+        return false;
+      }
+    }
+    
+    function validatePassword() {
+      const value = password.value;
+      const message = document.getElementById('password-message');
+      const lengthReq = document.getElementById('req-pass-length');
+      const numberReq = document.getElementById('req-number');
+      
+      const hasLength = value.length >= 8;
+      const hasNumber = /\d/.test(value);
+      
+      if (hasLength) {
+        lengthReq.classList.add('met');
+      } else {
+        lengthReq.classList.remove('met');
+      }
+      
+      if (hasNumber) {
+        numberReq.classList.add('met');
+      } else {
+        numberReq.classList.remove('met');
+      }
+      
+      if (hasLength && hasNumber) {
+        password.classList.remove('invalid');
+        password.classList.add('valid');
+        message.textContent = '✓ Password meets requirements';
+        message.className = 'validation-message success';
+        return true;
+      } else {
+        password.classList.remove('valid');
+        password.classList.add('invalid');
+        const missing = [];
+        if (!hasLength) missing.push('8+ characters');
+        if (!hasNumber) missing.push('one number');
+        message.textContent = `Password needs: ${missing.join(', ')}`;
+        message.className = 'validation-message error';
+        return false;
+      }
+    }
+    
+    function validateRepeatPassword() {
+      const value = repeatPassword.value;
+      const message = document.getElementById('repeat-message');
+      const requirement = document.getElementById('req-match');
+      
+      if (value && value === password.value) {
+        repeatPassword.classList.remove('invalid');
+        repeatPassword.classList.add('valid');
+        message.textContent = '✓ Passwords match';
+        message.className = 'validation-message success';
+        requirement.classList.add('met');
+        return true;
+      } else if (value) {
+        repeatPassword.classList.remove('valid');
+        repeatPassword.classList.add('invalid');
+        message.textContent = 'Passwords do not match';
+        message.className = 'validation-message error';
+        requirement.classList.remove('met');
+        return false;
+      }
+      requirement.classList.remove('met');
+      return false;
+    }
+    
+    function updateSubmitButton() {
+      const isValid = validateUsername() && validatePassword() && validateRepeatPassword();
+      submitBtn.disabled = !isValid;
+    }
+    
+    username.addEventListener('input', () => {
+      validateUsername();
+      updateSubmitButton();
+    });
+    
+    password.addEventListener('input', () => {
+      validatePassword();
+      if (repeatPassword.value) validateRepeatPassword();
+      updateSubmitButton();
+    });
+    
+    repeatPassword.addEventListener('input', () => {
+      validateRepeatPassword();
+      updateSubmitButton();
+    });
+    
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+      if (!validateUsername() || !validatePassword() || !validateRepeatPassword()) {
+        e.preventDefault();
+        return;
+      }
+      
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Creating Account...';
+    });
+    
+    // Initial validation
+    updateSubmitButton();
+  </script>
+</body>
+</html>

@@ -1,0 +1,598 @@
+[
+  {
+    "name": "Chicken Breast",
+    "calories": 165,
+    "protein": 31,
+    "carbs": 0,
+    "fat": 3.6,
+    "categories": [
+      "high-protein",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Apple",
+    "calories": 52,
+    "protein": 0.3,
+    "carbs": 14,
+    "fat": 0.2,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Brown Rice",
+    "calories": 111,
+    "protein": 2.6,
+    "carbs": 23,
+    "fat": 0.9,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Greek Yogurt",
+    "calories": 59,
+    "protein": 10,
+    "carbs": 3.6,
+    "fat": 0.4,
+    "categories": [
+      "high-protein",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Peanut Butter",
+    "calories": 588,
+    "protein": 25,
+    "carbs": 20,
+    "fat": 50,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Egg",
+    "calories": 78,
+    "protein": 6,
+    "carbs": 0.6,
+    "fat": 5,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Oats",
+    "calories": 389,
+    "protein": 17,
+    "carbs": 66,
+    "fat": 7,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Banana",
+    "calories": 89,
+    "protein": 1.1,
+    "carbs": 23,
+    "fat": 0.3,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Salmon",
+    "calories": 208,
+    "protein": 20,
+    "carbs": 0,
+    "fat": 13,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Broccoli",
+    "calories": 34,
+    "protein": 2.8,
+    "carbs": 7,
+    "fat": 0.4,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Almonds",
+    "calories": 579,
+    "protein": 21,
+    "carbs": 22,
+    "fat": 50,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Quinoa",
+    "calories": 120,
+    "protein": 4.1,
+    "carbs": 21,
+    "fat": 1.9,
+    "categories": [
+      "vegan"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Sweet Potato",
+    "calories": 86,
+    "protein": 1.6,
+    "carbs": 20,
+    "fat": 0.1,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Cottage Cheese",
+    "calories": 98,
+    "protein": 11,
+    "carbs": 3.4,
+    "fat": 4.3,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Turkey Breast",
+    "calories": 104,
+    "protein": 17,
+    "carbs": 0,
+    "fat": 2,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Tofu",
+    "calories": 76,
+    "protein": 8,
+    "carbs": 1.9,
+    "fat": 4.8,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Lentils",
+    "calories": 116,
+    "protein": 9,
+    "carbs": 20,
+    "fat": 0.4,
+    "categories": [
+      "vegan",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Beef Steak",
+    "calories": 271,
+    "protein": 25,
+    "carbs": 0,
+    "fat": 19,
+    "categories": [
+      "high-protein",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Pasta",
+    "calories": 131,
+    "protein": 5,
+    "carbs": 25,
+    "fat": 1.1,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Milk",
+    "calories": 42,
+    "protein": 3.4,
+    "carbs": 5,
+    "fat": 1,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Orange",
+    "calories": 47,
+    "protein": 0.9,
+    "carbs": 12,
+    "fat": 0.1,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Avocado",
+    "calories": 160,
+    "protein": 2,
+    "carbs": 9,
+    "fat": 15,
+    "categories": [
+      "vegan",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Rice Cake",
+    "calories": 35,
+    "protein": 0.7,
+    "carbs": 7,
+    "fat": 0.3,
+    "categories": [
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Protein Bar",
+    "calories": 220,
+    "protein": 20,
+    "carbs": 23,
+    "fat": 7,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Granola",
+    "calories": 471,
+    "protein": 10,
+    "carbs": 64,
+    "fat": 20,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Spinach",
+    "calories": 23,
+    "protein": 2.9,
+    "carbs": 3.6,
+    "fat": 0.4,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Cheddar Cheese",
+    "calories": 403,
+    "protein": 25,
+    "carbs": 1.3,
+    "fat": 33,
+    "categories": [
+      "high-protein",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Shrimp",
+    "calories": 99,
+    "protein": 24,
+    "carbs": 0.2,
+    "fat": 0.3,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Tuna",
+    "calories": 132,
+    "protein": 28,
+    "carbs": 0,
+    "fat": 1,
+    "categories": [
+      "high-protein"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Egg White",
+    "calories": 52,
+    "protein": 11,
+    "carbs": 0.7,
+    "fat": 0.2,
+    "categories": [
+      "high-protein",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Whole Wheat Bread",
+    "calories": 247,
+    "protein": 13,
+    "carbs": 41,
+    "fat": 4.2,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Peas",
+    "calories": 81,
+    "protein": 5,
+    "carbs": 14,
+    "fat": 0.4,
+    "categories": [
+      "vegan"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Carrot",
+    "calories": 41,
+    "protein": 0.9,
+    "carbs": 10,
+    "fat": 0.2,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Cucumber",
+    "calories": 16,
+    "protein": 0.7,
+    "carbs": 3.6,
+    "fat": 0.1,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Strawberry",
+    "calories": 33,
+    "protein": 0.7,
+    "carbs": 8,
+    "fat": 0.3,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Blueberry",
+    "calories": 57,
+    "protein": 0.7,
+    "carbs": 14,
+    "fat": 0.3,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Walnut",
+    "calories": 654,
+    "protein": 15,
+    "carbs": 14,
+    "fat": 65,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Cashew",
+    "calories": 553,
+    "protein": 18,
+    "carbs": 30,
+    "fat": 44,
+    "categories": [
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Pumpkin Seed",
+    "calories": 559,
+    "protein": 30,
+    "carbs": 11,
+    "fat": 49,
+    "categories": [
+      "high-protein",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Sunflower Seed",
+    "calories": 584,
+    "protein": 21,
+    "carbs": 20,
+    "fat": 51,
+    "categories": [
+      "high-protein",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Chia Seed",
+    "calories": 486,
+    "protein": 17,
+    "carbs": 42,
+    "fat": 31,
+    "categories": [
+      "vegan",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Raspberry",
+    "calories": 52,
+    "protein": 1.2,
+    "carbs": 12,
+    "fat": 0.7,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Pineapple",
+    "calories": 50,
+    "protein": 0.5,
+    "carbs": 13,
+    "fat": 0.1,
+    "categories": [
+      "vegan",
+      "cutting"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  },
+  {
+    "name": "Mango",
+    "calories": 60,
+    "protein": 0.8,
+    "carbs": 15,
+    "fat": 0.4,
+    "categories": [
+      "vegan",
+      "bulking"
+    ],
+    "public": true,
+    "creator": "system",
+    "pending_approval": false
+  }
+]
